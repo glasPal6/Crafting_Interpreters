@@ -1,8 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Clangd hack
+#define LOGGING_IMPLEMENTATION_MAIN
+// Clangd hack
+
+#define LOGGING_IMPLEMENTATION
+#include "logging.h"
+
 void interpret(char *source)
 {
+    printf("%s\n", source);
     exit(2);
 }
 
