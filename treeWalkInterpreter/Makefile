@@ -4,16 +4,20 @@ CFLAGS = -g
 ALL_CFLAGS = $(CFLAGS) -Wall -Werror
 
 .PHONY: all
-all: main
+all: jlox
 
-main: main.o
-	$(CC) -o main main.o
+jlox: jlox.o
+	$(CC) -o jlox jlox.o
 
-main.o: main.c
-	$(CC) -c main.c $(ALL_CFLAGS) 
+jlox.o: jlox.c
+	$(CC) -c jlox.c $(ALL_CFLAGS) 
+
+.PHONY: run
+run: jlox
+	./jlox touch.lox
 
 .PHONY: clean
 clean:
 	$(RM) -f *.o
-	$(RM) main
+	$(RM) jlox
 
