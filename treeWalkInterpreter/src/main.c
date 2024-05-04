@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // Clangd hack
 #define LOGGING_IMPLEMENTATION_MAIN
-// Clangd hack
+#define TOKEN_IMPLENEMTATION_MAIN
 
 #define LOGGING_IMPLEMENTATION
 #include "logging.h"
 
 void interpret(char *source)
 {
+    bool had_error = false;
     printf("%s\n", source);
-    exit(2);
+    if (had_error) exit(1);
 }
 
 void runFile(char *path)

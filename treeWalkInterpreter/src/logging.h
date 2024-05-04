@@ -2,30 +2,29 @@
 #define _LOGGING_H
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
 
-void error(int line, char *message);
-void report(int line, char *where, char* message);
+void error(int line, char *message, bool *had_error);
+void report(int line, char *where, char* message, bool *had_error);
 
 #endif // _LOGGING_H
 
-//Clangd hack
+// Clngd hack
 #ifndef LOGGING_IMPLEMENTATION_MAIN
 #define LOGGING_IMPLEMENTATION
 #endif // !LOGGING_IMPLEMENTATION_MAIN
-//Clangd hack
 
 #ifdef LOGGING_IMPLEMENTATION
 
-void error(int line, char *message)
+void error(int line, char *message, bool *had_error)
 {
-    report(line, "", message);
+    report(line, "", message, had_error);
 }
 
-void report(int line, char *where, char *message)
+void report(int line, char *where, char *message, bool *had_error)
 {
     printf("[line %d] Error %s: %s\n", line, where, message);
-    exit(1);
+    *had_error = true;
 }
 
 #endif // LOGGING_IMPLEMENTATION
