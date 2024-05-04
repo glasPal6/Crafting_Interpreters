@@ -1,0 +1,17 @@
+#ifndef _SCANNER_H
+#define _SCANNER_H
+
+
+
+#endif // !_SCANNER_H 
+
+// Clangd hack
+#ifndef SCANNER_IMPLEMENTATION_MAIN
+#define SCANNER_IMPLEMENTATION
+#endif // !SCANNER_IMPLEMENTATION_MAIN
+
+#ifdef SCANNER_IMPLEMENTATION
+
+
+
+#endif // SCANNER_IMPLEMENTATION

@@ -5,9 +5,14 @@
 // Clangd hack
 #define LOGGING_IMPLEMENTATION_MAIN
 #define TOKEN_IMPLENEMTATION_MAIN
+#define SCANNER_IMPLEMENTATION_MAIN
+#define LISTS_IMPLEMENTATION_MAIN
 
 #define LOGGING_IMPLEMENTATION
 #include "logging.h"
+
+#define TOKEN_IMPLENEMTATION
+#define LISTS_IMPLEMENTATION
 
 void interpret(char *source)
 {

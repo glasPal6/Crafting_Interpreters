@@ -9,7 +9,7 @@ void report(int line, char *where, char* message, bool *had_error);
 
 #endif // _LOGGING_H
 
-// Clngd hack
+// Clangd hack
 #ifndef LOGGING_IMPLEMENTATION_MAIN
 #define LOGGING_IMPLEMENTATION
 #endif // !LOGGING_IMPLEMENTATION_MAIN
