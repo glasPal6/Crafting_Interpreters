@@ -1,5 +1,5 @@
-#ifndef _LISTS_H
-#define _LISTS_H
+#ifndef _TOKENLIST_H
+#define _TOKENLIST_H
 
 #include "tokens.h"
 #include <stdlib.h>
@@ -13,14 +13,14 @@ typedef struct Node {
 void listPush(Node* list, Token token);
 Token listPopEnd(Node* list);
 
-#endif // !_LISTS_H
+#endif // !_TOKENLIST_H
 
 // Clangd hack
-#ifndef LISTS_IMPLEMENTATION_MAIN
-#define LISTS_IMPLEMENTATION
-#endif // !LISTS_IMPLEMENTATION_MAIN 
+#ifndef TOKENLIST_IMPLEMENTATION_MAIN
+#define TOKENLIST_IMPLEMENTATION
+#endif // !TOKENLIST_IMPLEMENTATION_MAIN 
 
-#ifdef LISTS_IMPLEMENTATION
+#ifdef TOKENLIST_IMPLEMENTATION
 
 void listPush(Node* list, Token token)
 {
@@ -66,5 +66,5 @@ Token listPopEnd(Node* list)
     return  token;
 }
 
-#endif //LISTS_IMPLEMENTATION
+#endif //TOKENLIST_IMPLEMENTATION
 
