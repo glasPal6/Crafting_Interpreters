@@ -1,7 +1,7 @@
 #ifndef _SCANNER_H
 #define _SCANNER_H
 
-
+#include "lists.h"
 
 #endif // !_SCANNER_H 
 
