@@ -1,5 +1,5 @@
-#ifndef _TOKENS_H
-#define _TOKENS_H
+#ifndef TOKENS_H
+#define TOKENS_H
 
 #include <stdio.h>
 
@@ -31,9 +31,9 @@ typedef struct {
     int line;
 } Token;
 
-void printToken(Token *token);
+void printToken(Token token);
 
-#endif // _TOKENS_H
+#endif // TOKENS_H
 
 // Clangd hack
 #ifndef TOKEN_IMPLENEMTATION_MAIN
@@ -41,11 +41,12 @@ void printToken(Token *token);
 #endif // !TOKEN_IMPLENEMTATION_MAIN
 
 #ifdef TOKEN_IMPLENEMTATION
+#undef TOKEN_IMPLENEMTATION
 
-void prinprintToken(Token *token)
+void printToken(Token token)
 {
     char* token_type_string;
-    switch (token->type) {
+    switch (token.type) {
         case LEFT_PAREN: token_type_string = "LEFT_PAREN"; break;
         case RIGHT_PAREN: token_type_string = "RIGHT_PAREN"; break;
         case LEFT_BRACE: token_type_string = "LEFT_BRACE"; break;
@@ -86,7 +87,7 @@ void prinprintToken(Token *token)
         case WHILE: token_type_string = "WHILE"; break;
         case EOF_I: token_type_string = "EOF"; break;
     }
-    printf("%s - %s - %s", token_type_string, token->lexeme, token->literal);
+    printf("%s - %s - %s\n", token_type_string, token.lexeme, token.literal);
 }
 
 #endif // TOKEN_IMPLENEMTATION 

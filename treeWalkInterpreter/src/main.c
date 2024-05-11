@@ -1,3 +1,4 @@
+#include "tokens.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -5,19 +6,38 @@
 // Clangd hack
 #define LOGGING_IMPLEMENTATION_MAIN
 #define TOKEN_IMPLENEMTATION_MAIN
-#define SCANNER_IMPLEMENTATION_MAIN
 #define TOKENLIST_IMPLEMENTATION_MAIN
+#define SCANNER_IMPLEMENTATION_MAIN
+
+// #define SCANNER_IMPLEMENTATION
+// #include "scanner.h"
+
+#define TOKENLIST_IMPLEMENTATION
+#include "tokenList.h"
 
 #define LOGGING_IMPLEMENTATION
 #include "logging.h"
 
-#define TOKEN_IMPLENEMTATION
-#define LISTS_IMPLEMENTATION
-
 void interpret(char *source)
 {
     bool had_error = false;
-    printf("%s\n", source);
+
+    TokenList tokens = {
+        .token = NULL,
+        .next = NULL,
+        .index = 0
+    };
+    Token* token = malloc(sizeof(Token));
+    token->literal = NULL;
+    token->lexeme = NULL;
+    token->type = ELSE;
+    token->line = 0;
+    listPush(&tokens, token);
+    listPush(&tokens, token);
+
+    free(token);
+
+    printf("%s", source);
     if (had_error) exit(1);
 }
 

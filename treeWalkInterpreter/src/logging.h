@@ -1,5 +1,5 @@
-#ifndef _LOGGING_H
-#define _LOGGING_H
+#ifndef LOGGING_H
+#define LOGGING_H
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -7,7 +7,7 @@
 void error(int line, char *message, bool *had_error);
 void report(int line, char *where, char* message, bool *had_error);
 
-#endif // _LOGGING_H
+#endif // LOGGING_H
 
 // Clangd hack
 #ifndef LOGGING_IMPLEMENTATION_MAIN
@@ -15,6 +15,7 @@ void report(int line, char *where, char* message, bool *had_error);
 #endif // !LOGGING_IMPLEMENTATION_MAIN
 
 #ifdef LOGGING_IMPLEMENTATION
+#undef LOGGING_IMPLEMENTATION
 
 void error(int line, char *message, bool *had_error)
 {
