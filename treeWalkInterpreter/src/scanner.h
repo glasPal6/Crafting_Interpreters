@@ -7,30 +7,28 @@
 
 #include "logging.h"
 #include "tokenList.h"
-#include "tokens.h"
 
 typedef struct {
-    TokenList* tokens;
     int start;
     int current;
     int line;
     int source_length;
 } Scanner;
 
-void scanTokens(TokenList* tokens, char *source, bool *had_error);
+void scanTokens(TokenList** tokens, char *source, bool *had_error);
 bool isAtEnd(Scanner scanner);
-void scanToken(Scanner *scanner, char *source, bool *had_error);
+void scanToken(TokenList** tokens, Scanner* scanner, char *source, bool *had_error);
 char advance(Scanner *scanner, char *source);
-void addToken(Scanner *scanner, char *text, TokenType type);
+void addToken(TokenList** list, Scanner *scanner, char *text, TokenType type);
 bool match(Scanner *scanner, char *source, char expected);
 char peek(Scanner scanner, char *source);
 char peekNext(Scanner scanner, char *source);
-void addString(Scanner *scanner, char *source, bool *had_error);
+void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error);
 bool isDigit(char c);
-void addNumber(Scanner *scanner, char *source);
+void addNumber(TokenList** list, Scanner *scanner, char *source);
 bool isAlpha(char c);
 bool isAlphaNumeric(char c);
-void identifier(Scanner *scanner, char *source);
+void identifier(TokenList** list, Scanner* scanner, char* source);
 
 #endif // !SCANNER_H
 
@@ -42,86 +40,87 @@ void identifier(Scanner *scanner, char *source);
 #ifdef SCANNER_IMPLEMENTATION
 #undef SCANNER_IMPLEMENTATION
 
-void scanTokens(TokenList* tokens, char *source, bool *had_error) {
-    Scanner* scanner = malloc(sizeof(Scanner));
-    scanner->tokens = tokens;
-    scanner->start = 0;
-    scanner->current = 0;
-    scanner->line = 1;
-    scanner->source_length = strlen(source);
+void scanTokens(TokenList** tokens, char *source, bool *had_error) {
+    Scanner scanner = {
+        .current = 0,
+        .start = 0,
+        .line = 1,
+        .source_length = strlen(source),
+    };
 
-    while (!isAtEnd(*scanner)) {
-        scanner->start = scanner->current;
-        scanToken(scanner, source, had_error);
+    while (!isAtEnd(scanner)) {
+        scanner.start = scanner.current;
+        scanToken(tokens, &scanner, source, had_error);
     }
 
-    Token* endOfFile = malloc(sizeof(Token));
-    endOfFile->type = EOF_I;
-    endOfFile->lexeme = NULL;
-    endOfFile->literal = NULL;
-    endOfFile->line = scanner->line;
+    Token endOfFile = {
+        .type = EOF_I,
+        .lexeme = NULL,
+        .literal = NULL,
+        .line = scanner.line
+    };
 
-    listPush(scanner->tokens, endOfFile);
-    free(scanner);
+    listPush(tokens, endOfFile);
 }
 
 bool isAtEnd(Scanner scanner) {
     return scanner.current >= scanner.source_length;
 }
 
-void scanToken(Scanner *scanner, char *source, bool *had_error) {
+void scanToken(TokenList** tokens, Scanner* scanner, char *source, bool *had_error)
+{
     char c = advance(scanner, source);
     switch (c) {
     // Pure singe Tokens
     case '(':
-        addToken(scanner, NULL, LEFT_PAREN);
+        addToken(tokens, scanner, NULL, LEFT_PAREN);
         break;
     case ')':
-        addToken(scanner, NULL, RIGHT_PAREN);
+        addToken(tokens, scanner, NULL, RIGHT_PAREN);
         break;
     case '{':
-        addToken(scanner, NULL, LEFT_BRACE);
+        addToken(tokens, scanner, NULL, LEFT_BRACE);
         break;
     case '}':
-        addToken(scanner, NULL, RIGHT_BRACE);
+        addToken(tokens, scanner, NULL, RIGHT_BRACE);
         break;
     case ',':
-        addToken(scanner, NULL, COMMA);
+        addToken(tokens, scanner, NULL, COMMA);
         break;
     case '.':
-        addToken(scanner, NULL, DOT);
+        addToken(tokens, scanner, NULL, DOT);
         break;
     case '-':
-        addToken(scanner, NULL, MINUS);
+        addToken(tokens, scanner, NULL, MINUS);
         break;
     case '+':
-        addToken(scanner, NULL, PLUS);
+        addToken(tokens, scanner, NULL, PLUS);
         break;
     case ';':
-        addToken(scanner, NULL, SEMICOLON);
+        addToken(tokens, scanner, NULL, SEMICOLON);
         break;
     case '*':
-        addToken(scanner, NULL, STAR);
+        addToken(tokens, scanner, NULL, STAR);
         break;
 
     // Single or double Tokens
     case '!':
-        addToken(scanner, NULL,
+        addToken(tokens, scanner, NULL,
                  match(scanner, source, '=') ? BANG_EQUAL : BANG);
         break;
 
     case '=':
-        addToken(scanner, NULL,
+        addToken(tokens, scanner, NULL,
                  match(scanner, source, '=') ? EQUAL_EQUAL : EQUAL);
         break;
 
     case '<':
-        addToken(scanner, NULL,
+        addToken(tokens, scanner, NULL,
                  match(scanner, source, '=') ? LESS_EQUAL : LESS);
         break;
 
     case '>':
-        addToken(scanner, NULL,
+        addToken(tokens, scanner, NULL,
                  match(scanner, source, '=') ? GREATER_EQUAL : GREATER);
         break;
 
@@ -131,7 +130,7 @@ void scanToken(Scanner *scanner, char *source, bool *had_error) {
             while (peek(*scanner, source) != '\n' && !isAtEnd(*scanner))
                 advance(scanner, source);
         } else {
-            addToken(scanner, NULL, SLASH);
+            addToken(tokens, scanner, NULL, SLASH);
         }
         break;
 
@@ -148,14 +147,14 @@ void scanToken(Scanner *scanner, char *source, bool *had_error) {
 
     // Strings
     case '"':
-        addString(scanner, source, had_error);
+        addString(tokens, scanner, source, had_error);
         break;
 
     default:
         if (isDigit(c)) {
-            addNumber(scanner, source);
+            addNumber(tokens, scanner, source);
         } else if (isAlpha(c)) {
-            identifier(scanner, source);
+            identifier(tokens, scanner, source);
         } else {
             error(scanner->line, "Unexpected character.", had_error);
         }
@@ -167,13 +166,14 @@ char advance(Scanner *scanner, char *source) {
     return source[scanner->current++];
 }
 
-void addToken(Scanner *scanner, char *text, TokenType type) {
-    Token* token = malloc(sizeof(Token));
-    token->type = type;
-    token->lexeme = text;
-    token->literal = NULL;
-    token->line = scanner->line;
-    listPush(scanner->tokens, token);
+void addToken(TokenList** list, Scanner *scanner, char *text, TokenType type) {
+    Token token = {
+        .type = type,
+        .lexeme = text,
+        .literal = NULL,
+        .line = scanner->line
+    };
+    listPush(list, token);
 }
 
 bool match(Scanner *scanner, char *source, char expected) {
@@ -198,7 +198,7 @@ char peekNext(Scanner scanner, char *source) {
     return source[scanner.current + 1];
 }
 
-void addString(Scanner *scanner, char *source, bool *had_error) {
+void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error) {
     // Go to the end of the '"'
     while (peek(*scanner, source) != '"' && !isAtEnd(*scanner)) {
         if (peek(*scanner, source) == '\n')
@@ -217,12 +217,13 @@ void addString(Scanner *scanner, char *source, bool *had_error) {
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
-    addToken(scanner, text, STRING);
+    addToken(list, scanner, text, STRING);
 }
 
 bool isDigit(char c) { return c >= '0' && c <= '9'; }
 
-void addNumber(Scanner *scanner, char *source) {
+void addNumber(TokenList** list, Scanner *scanner, char *source)
+{
     while (isDigit(peek(*scanner, source)))
         advance(scanner, source);
 
@@ -236,7 +237,7 @@ void addNumber(Scanner *scanner, char *source) {
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
-    addToken(scanner, text, NUMBER);
+    addToken(list, scanner, text, NUMBER);
 }
 
 bool isAlpha(char c)
@@ -251,7 +252,7 @@ bool isAlphaNumeric(char c)
     return isAlpha(c) || isDigit(c);
 }
 
-void identifier(Scanner* scanner, char* source)
+void identifier(TokenList** list, Scanner* scanner, char* source)
 {
     while (isAlphaNumeric(peek(*scanner, source)))
         advance(scanner, source);
@@ -298,7 +299,7 @@ void identifier(Scanner* scanner, char* source)
         type = WHILE;
     }
     
-    addToken(scanner, NULL, type);
+    addToken(list, scanner, NULL, type);
 }
 
 #endif // SCANNER_IMPLEMENTATION

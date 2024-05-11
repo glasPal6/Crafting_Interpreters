@@ -9,8 +9,8 @@
 #define TOKENLIST_IMPLEMENTATION_MAIN
 #define SCANNER_IMPLEMENTATION_MAIN
 
-// #define SCANNER_IMPLEMENTATION
-// #include "scanner.h"
+#define SCANNER_IMPLEMENTATION
+#include "scanner.h"
 
 #define TOKENLIST_IMPLEMENTATION
 #include "tokenList.h"
@@ -22,22 +22,14 @@ void interpret(char *source)
 {
     bool had_error = false;
 
-    TokenList tokens = {
-        .token = NULL,
-        .next = NULL,
-        .index = 0
-    };
-    Token* token = malloc(sizeof(Token));
-    token->literal = NULL;
-    token->lexeme = NULL;
-    token->type = ELSE;
-    token->line = 0;
-    listPush(&tokens, token);
-    listPush(&tokens, token);
+    TokenList* tokens = malloc(sizeof(TokenList));
+    tokens = NULL;
 
-    free(token);
+    scanTokens(&tokens, source, &had_error);
+    listPrint(tokens);
 
-    printf("%s", source);
+    free(tokens);
+    
     if (had_error) exit(1);
 }
 

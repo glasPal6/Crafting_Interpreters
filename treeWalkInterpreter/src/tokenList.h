@@ -52,6 +52,10 @@ void listPop(TokenList** list)
 
 void listPrint(TokenList* list)
 {
+    if (list == NULL) {
+        printf("List has no Tokens\n");
+        return;
+    }
     while (list != NULL) {
         printToken(list->token);
         list = list->next;
