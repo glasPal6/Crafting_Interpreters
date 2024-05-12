@@ -56,7 +56,7 @@ void scanTokens(TokenList** tokens, char *source, bool *had_error) {
     Token endOfFile = {
         .type = EOF_I,
         .lexeme = NULL,
-        .literal = NULL,
+        .literal.string = NULL,
         .line = scanner.line
     };
 
@@ -172,12 +172,23 @@ void addToken(TokenList** list, Scanner *scanner, char *source, char *literal, T
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
-    Token token = {
-        .type = type,
-        .lexeme = text,
-        .literal = literal,
-        .line = scanner->line
-    };
+    Token token;
+    if (type == STRING) {
+        token.type = type;
+        token.lexeme = text;
+        token.literal.string = literal;
+        token.line = scanner->line;
+    } else if (type == NUMBER) {
+        token.type = type;
+        token.lexeme = text;
+        token.literal.number = atof(literal);
+        token.line = scanner->line;
+    } else {
+        token.type = type;
+        token.lexeme = text;
+        token.literal.string = literal;
+        token.line = scanner->line;
+    }
     listPush(list, token);
 }
 

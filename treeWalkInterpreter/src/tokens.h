@@ -24,10 +24,15 @@ typedef enum {
     EOF_I
 } TokenType ;
 
+union Literal {
+    double number;
+    char* string;
+};
+
 typedef struct {
     TokenType type;
     char* lexeme;
-    char* literal; // This may cause problems later
+    union Literal literal;
     int line;
 } Token;
 
@@ -87,7 +92,12 @@ void printToken(Token token)
         case WHILE: token_type_string = "WHILE"; break;
         case EOF_I: token_type_string = "EOF"; break;
     }
-    printf("%s - %s - %s\n", token_type_string, token.lexeme, token.literal);
+    if (token.type == STRING)
+        printf("%s - %s - %s\n", token_type_string, token.lexeme, token.literal.string);
+    else if (token.type == NUMBER)
+        printf("%s - %s - %lf\n", token_type_string, token.lexeme, token.literal.number);
+    else 
+        printf("%s - %s\n", token_type_string, token.lexeme);
 }
 
 #endif // TOKEN_IMPLENEMTATION 
