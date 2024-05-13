@@ -22,7 +22,7 @@ void interpret(char *source)
 {
     bool had_error = false;
 
-    TokenList* tokens = malloc(sizeof(TokenList));
+    TokenList* tokens = (TokenList*)malloc(sizeof(TokenList));
     tokens = NULL;
 
     scanTokens(&tokens, source, &had_error);

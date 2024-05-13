@@ -60,7 +60,7 @@ void scanTokens(TokenList** tokens, char *source, bool *had_error) {
         .line = scanner.line
     };
 
-    listPush(tokens, endOfFile);
+    listPushEnd(tokens, endOfFile);
 }
 
 bool isAtEnd(Scanner scanner) {
@@ -168,7 +168,7 @@ char advance(Scanner *scanner, char *source) {
 
 void addToken(TokenList** list, Scanner *scanner, char *source, char *literal, TokenType type)
 {
-    char *text = malloc(scanner->current - scanner->start + 1);
+    char *text = (char*)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
@@ -189,7 +189,7 @@ void addToken(TokenList** list, Scanner *scanner, char *source, char *literal, T
         token.literal.string = literal;
         token.line = scanner->line;
     }
-    listPush(list, token);
+    listPushEnd(list, token);
 }
 
 bool match(Scanner *scanner, char *source, char expected) {
@@ -229,7 +229,7 @@ void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error
     // Consume the last '"'
     advance(scanner, source);
 
-    char *text = malloc(scanner->current - scanner->start + 1);
+    char *text = (char*)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
@@ -249,7 +249,7 @@ void addNumber(TokenList** list, Scanner *scanner, char *source)
             advance(scanner, source);
     }
 
-    char *text = malloc(scanner->current - scanner->start + 1);
+    char *text = (char*)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
@@ -273,7 +273,7 @@ void identifier(TokenList** list, Scanner* scanner, char* source)
     while (isAlphaNumeric(peek(*scanner, source)))
         advance(scanner, source);
 
-    char* text = malloc(scanner->current - scanner->start + 1);
+    char* text = (char*)malloc(scanner->current - scanner->start + 1);
     memcpy(
         text,
         source + scanner->start, scanner->current - scanner->start

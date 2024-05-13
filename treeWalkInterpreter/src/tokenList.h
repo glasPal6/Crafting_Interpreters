@@ -5,6 +5,7 @@
 #include "tokens.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct TokenList {
     Token token;
@@ -12,7 +13,8 @@ typedef struct TokenList {
     int index;
 } TokenList;
 
-void listPush(TokenList** list, Token token);
+void listPushEnd(TokenList** list, Token token);
+void listPushStart(TokenList** list, Token token);
 void listPopEnd(TokenList** list);
 void listPrint(TokenList* list);
 
@@ -26,11 +28,31 @@ void listPrint(TokenList* list);
 #ifdef TOKENLIST_IMPLEMENTATION
 #undef TOKENLIST_IMPLEMENTATION
 
-void listPush(TokenList** list, Token token)
+void listPushEnd(TokenList** list, Token token)
+{
+    TokenList* node = (TokenList*)malloc(sizeof(TokenList));
+    node->token = token;
+    node->next = NULL;
+    node->index = 0;
+
+    if (*list == NULL) {
+        *list = node;
+        return;
+    } else {
+        TokenList* last = *list;
+        while (last->next != NULL) {
+            last = last->next;
+            node->index++;
+        }
+        last->next = node;
+    }
+}
+
+void listPushStart(TokenList **list, Token token)
 {
     if (*list != NULL)
         (*list)->index++;
-
+    
     TokenList* node = (TokenList*)malloc(sizeof(TokenList));
     node->token = token;
     node->next = (*list);
