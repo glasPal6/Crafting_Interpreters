@@ -223,7 +223,7 @@ void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error
     }
 
     if (isAtEnd(*scanner)) {
-        error(scanner->line, "Unterminated string", had_error);
+        error(scanner->line - 1, "Unterminated string", had_error);
     }
 
     // Consume the last '"'
