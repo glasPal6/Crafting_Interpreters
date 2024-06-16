@@ -3,29 +3,26 @@
 
 #include "tokens.h"
 
-// Generate this with code
-typedef enum { EXPR_LITERAL, EXPR_UNARY, EXPR_BINARY, EXPR_GROUPING } ExprType;
+// Generated this with code
+typedef enum { EXPR_GROUPING, EXPR_BINARY, EXPR_LITERAL, EXPR_UNARY } ExprType;
 
 typedef struct {
     ExprType type;
     union {
+        struct Expr *grouping;
+        struct {
+            struct Expr *left;
+            Token *token;
+            struct Expr *right;
+        } binary;
         struct {
             Token *token;
-            union {
-                double number;
-                char *string;
-            };
+            union Literal *literal;
         } literal;
         struct {
             Token *token;
             struct Expr *right;
         } unary;
-        struct {
-            Token *token;
-            struct Expr *left;
-            struct Expr *right;
-        } binary;
-        struct Expr *grouping;
     } value;
 } Expr;
 
