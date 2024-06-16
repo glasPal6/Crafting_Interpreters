@@ -15,32 +15,30 @@ typedef struct {
     int source_length;
 } Scanner;
 
-void scanTokens(TokenList** tokens, char *source, bool *had_error);
+void scanTokens(TokenList **tokens, char *source, bool *had_error);
 bool isAtEnd(Scanner scanner);
-void scanToken(TokenList** tokens, Scanner* scanner, char *source, bool *had_error);
+void scanToken(TokenList **tokens, Scanner *scanner, char *source,
+               bool *had_error);
 char advance(Scanner *scanner, char *source);
-void addToken(TokenList** list, Scanner *scanner, char *source, char *literal, TokenType type);
+void addToken(TokenList **list, Scanner *scanner, char *source, char *literal,
+              TokenType type);
 bool match(Scanner *scanner, char *source, char expected);
 char peek(Scanner scanner, char *source);
 char peekNext(Scanner scanner, char *source);
-void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error);
+void addString(TokenList **list, Scanner *scanner, char *source,
+               bool *had_error);
 bool isDigit(char c);
-void addNumber(TokenList** list, Scanner *scanner, char *source);
+void addNumber(TokenList **list, Scanner *scanner, char *source);
 bool isAlpha(char c);
 bool isAlphaNumeric(char c);
-void identifier(TokenList** list, Scanner* scanner, char* source);
+void identifier(TokenList **list, Scanner *scanner, char *source);
 
 #endif // !SCANNER_H
-
-// Clangd hack
-#ifndef SCANNER_IMPLEMENTATION_MAIN
-#define SCANNER_IMPLEMENTATION
-#endif // !SCANNER_IMPLEMENTATION_MAIN
 
 #ifdef SCANNER_IMPLEMENTATION
 #undef SCANNER_IMPLEMENTATION
 
-void scanTokens(TokenList** tokens, char *source, bool *had_error) {
+void scanTokens(TokenList **tokens, char *source, bool *had_error) {
     Scanner scanner = {
         .current = 0,
         .start = 0,
@@ -53,12 +51,10 @@ void scanTokens(TokenList** tokens, char *source, bool *had_error) {
         scanToken(tokens, &scanner, source, had_error);
     }
 
-    Token endOfFile = {
-        .type = EOF_I,
-        .lexeme = NULL,
-        .literal.string = NULL,
-        .line = scanner.line
-    };
+    Token endOfFile = {.type = EOF_I,
+                       .lexeme = NULL,
+                       .literal.string = NULL,
+                       .line = scanner.line};
 
     listPushEnd(tokens, endOfFile);
 }
@@ -67,8 +63,8 @@ bool isAtEnd(Scanner scanner) {
     return scanner.current >= scanner.source_length;
 }
 
-void scanToken(TokenList** tokens, Scanner* scanner, char *source, bool *had_error)
-{
+void scanToken(TokenList **tokens, Scanner *scanner, char *source,
+               bool *had_error) {
     char c = advance(scanner, source);
     switch (c) {
     // Pure singe Tokens
@@ -166,9 +162,9 @@ char advance(Scanner *scanner, char *source) {
     return source[scanner->current++];
 }
 
-void addToken(TokenList** list, Scanner *scanner, char *source, char *literal, TokenType type)
-{
-    char *text = (char*)malloc(scanner->current - scanner->start + 1);
+void addToken(TokenList **list, Scanner *scanner, char *source, char *literal,
+              TokenType type) {
+    char *text = (char *)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
@@ -214,7 +210,8 @@ char peekNext(Scanner scanner, char *source) {
     return source[scanner.current + 1];
 }
 
-void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error) {
+void addString(TokenList **list, Scanner *scanner, char *source,
+               bool *had_error) {
     // Go to the end of the '"'
     while (peek(*scanner, source) != '"' && !isAtEnd(*scanner)) {
         if (peek(*scanner, source) == '\n')
@@ -229,7 +226,7 @@ void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error
     // Consume the last '"'
     advance(scanner, source);
 
-    char *text = (char*)malloc(scanner->current - scanner->start + 1);
+    char *text = (char *)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
@@ -238,8 +235,7 @@ void addString(TokenList** list, Scanner *scanner, char *source, bool *had_error
 
 bool isDigit(char c) { return c >= '0' && c <= '9'; }
 
-void addNumber(TokenList** list, Scanner *scanner, char *source)
-{
+void addNumber(TokenList **list, Scanner *scanner, char *source) {
     while (isDigit(peek(*scanner, source)))
         advance(scanner, source);
 
@@ -249,35 +245,25 @@ void addNumber(TokenList** list, Scanner *scanner, char *source)
             advance(scanner, source);
     }
 
-    char *text = (char*)malloc(scanner->current - scanner->start + 1);
+    char *text = (char *)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
     addToken(list, scanner, source, text, NUMBER);
 }
 
-bool isAlpha(char c)
-{
-    return  (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c == '_');
+bool isAlpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
 }
 
-bool isAlphaNumeric(char c)
-{
-    return isAlpha(c) || isDigit(c);
-}
+bool isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
 
-void identifier(TokenList** list, Scanner* scanner, char* source)
-{
+void identifier(TokenList **list, Scanner *scanner, char *source) {
     while (isAlphaNumeric(peek(*scanner, source)))
         advance(scanner, source);
 
-    char* text = (char*)malloc(scanner->current - scanner->start + 1);
-    memcpy(
-        text,
-        source + scanner->start, scanner->current - scanner->start
-    );
+    char *text = (char *)malloc(scanner->current - scanner->start + 1);
+    memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
     TokenType type = IDENTIFIER;
 
@@ -314,7 +300,7 @@ void identifier(TokenList** list, Scanner* scanner, char* source)
     } else if (strcmp(text, "while") == 0) {
         type = WHILE;
     }
-    
+
     addToken(list, scanner, source, NULL, type);
 }
 

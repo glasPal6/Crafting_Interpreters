@@ -10,18 +10,19 @@ set(CMAKE_BUILD_TYPE Debug)
 add_executable(${PROJECT_NAME} 
     src/main.c
 )
-# target_link_libraries(${PROJECT_NAME} 
-# )
+
+target_compile_definitions(${PROJECT_NAME} 
+PRIVATE
+    TOKEN_IMPLENEMTATION
+    SCANNER_IMPLEMENTATION
+    TOKENLIST_IMPLEMENTATION
+    LOGGING_IMPLEMENTATION
+)
+
 target_compile_options(${PROJECT_NAME} 
 PRIVATE 
     -Werror 
     -Wall 
     -Wextra
 )
-# target_compile_options(${PROJECT_NAME} 
-# PRIVATE 
-#     -O3
-#     -mtune=native
-# )
-
 

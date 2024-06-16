@@ -1,40 +1,27 @@
-#include "tokens.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
-// Clangd hack
-#define LOGGING_IMPLEMENTATION_MAIN
-#define TOKEN_IMPLENEMTATION_MAIN
-#define TOKENLIST_IMPLEMENTATION_MAIN
-#define SCANNER_IMPLEMENTATION_MAIN
-
-#define SCANNER_IMPLEMENTATION
+#include "logging.h"
 #include "scanner.h"
-
-#define TOKENLIST_IMPLEMENTATION
 #include "tokenList.h"
 
-#define LOGGING_IMPLEMENTATION
-#include "logging.h"
-
-void interpret(char *source)
-{
+void interpret(char *source) {
     bool had_error = false;
 
-    TokenList* tokens = (TokenList*)malloc(sizeof(TokenList));
+    TokenList *tokens = (TokenList *)malloc(sizeof(TokenList));
     tokens = NULL;
 
     scanTokens(&tokens, source, &had_error);
     listPrint(tokens);
 
     free(tokens);
-    
-    if (had_error) exit(1);
+
+    if (had_error)
+        exit(1);
 }
 
-void runFile(char *path)
-{
+void runFile(char *path) {
     FILE *lox_file = fopen(path, "r");
     if (lox_file == NULL) {
         printf("Error: could not open file: %s\n", path);
@@ -47,7 +34,7 @@ void runFile(char *path)
     rewind(lox_file);
 
     // Load the file as a string
-    char* buffer = (char*)malloc(file_size + 1);
+    char *buffer = (char *)malloc(file_size + 1);
     size_t bytes_to_read = fread(buffer, sizeof(char), file_size, lox_file);
     if (bytes_to_read < file_size) {
         printf("Error: could not read the file: %s\n", path);
@@ -63,10 +50,9 @@ void runFile(char *path)
     exit(0);
 }
 
-void runPrompt()
-{
+void runPrompt() {
     char line[1024];
-    
+
     while (1) {
         printf("> ");
 
@@ -81,8 +67,7 @@ void runPrompt()
     exit(1);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     // Check the args for the file
     if (argc > 2) {
         printf("Usage: jlox [script]\n");
