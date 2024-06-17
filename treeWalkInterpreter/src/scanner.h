@@ -250,6 +250,7 @@ void addNumber(TokenList **list, Scanner *scanner, char *source) {
     text[scanner->current - scanner->start] = '\0';
 
     addToken(list, scanner, source, text, NUMBER);
+    free(text);
 }
 
 bool isAlpha(char c) {
@@ -301,6 +302,7 @@ void identifier(TokenList **list, Scanner *scanner, char *source) {
         type = WHILE;
     }
 
+    free(text);
     addToken(list, scanner, source, NULL, type);
 }
 

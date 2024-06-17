@@ -71,6 +71,5 @@ void visitLiteral(Expr *expr) {
 void visitUnary(Expr *expr) {
 }
 
-
 #endif // EXPR_IMPLEMENTATION
 

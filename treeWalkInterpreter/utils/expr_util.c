@@ -110,7 +110,7 @@ void defineVisitorFunctinos(char *path, char class_names_upper[][STR_LENGTH],
         fprintf(file, "}\n\n");
     }
 
-    fprintf(file, "\n#endif // EXPR_IMPLEMENTATION\n\n");
+    fprintf(file, "#endif // EXPR_IMPLEMENTATION\n\n");
     fclose(file);
 }
 

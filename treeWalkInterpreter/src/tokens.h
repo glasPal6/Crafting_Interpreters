@@ -1,6 +1,8 @@
 #ifndef TOKENS_H
 #define TOKENS_H
 
+#include <stdio.h>
+#include <stdlib.h>
 typedef enum {
     // Single character tokens
     LEFT_PAREN,
@@ -63,12 +65,19 @@ typedef struct {
     int line;
 } Token;
 
+void freeToken(Token *token);
 void printToken(Token token);
 
 #endif // TOKENS_H
 
 #ifdef TOKEN_IMPLENEMTATION
 #undef TOKEN_IMPLENEMTATION
+
+void freeToken(Token *token) {
+    free(token->lexeme);
+    if (token->type == STRING)
+        free(token->literal.string);
+}
 
 void printToken(Token token) {
     char *token_type_string;

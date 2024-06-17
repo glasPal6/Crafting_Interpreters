@@ -14,7 +14,7 @@ typedef struct TokenList {
 
 void listPushEnd(TokenList **list, Token token);
 void listPushStart(TokenList **list, Token token);
-void listPopEnd(TokenList **list);
+void listPop(TokenList **list);
 void listPrint(TokenList *list);
 
 #endif // !TOKENLIST_H
@@ -60,6 +60,7 @@ void listPop(TokenList **list) {
     }
     TokenList *list_node = *list;
     *list = (*list)->next;
+    freeToken(&list_node->token);
     free(list_node);
 }
 

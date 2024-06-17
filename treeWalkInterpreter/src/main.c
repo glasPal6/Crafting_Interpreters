@@ -9,13 +9,14 @@
 void interpret(char *source) {
     bool had_error = false;
 
-    TokenList *tokens = (TokenList *)malloc(sizeof(TokenList));
-    tokens = NULL;
+    TokenList *tokens = NULL;
 
     scanTokens(&tokens, source, &had_error);
     listPrint(tokens);
 
-    free(tokens);
+    while (tokens != NULL) {
+        listPop(&tokens);
+    }
 
     if (had_error)
         exit(1);
