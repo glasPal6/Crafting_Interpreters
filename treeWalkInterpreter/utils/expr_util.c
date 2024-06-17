@@ -6,36 +6,13 @@
 #define STR_LENGTH 100
 #define TOKEN_LENGTH 10
 
-void defineAst(char *output_dir, char *name, char ast_classes[][STR_LENGTH],
-               size_t count) {
-    char path[sizeof(output_dir) + sizeof(name) + 6] = "../";
-    strcat(path, output_dir);
-    strcat(path, "/");
-    strcat(path, name);
-    strcat(path, ".h");
-    printf("Generating: %s\n", path);
-
+void defineAst(char *path, char class_names_upper[][STR_LENGTH],
+               char class_names_lower[][STR_LENGTH],
+               char class_types[][STR_LENGTH], size_t count) {
     FILE *file = fopen(path, "w");
     if (file == NULL) {
         printf("Error: could not open file: %s\n", path);
         return;
-    }
-
-    // Spilt into the class and the types
-    char class_names_upper[count][STR_LENGTH];
-    char class_names_lower[count][STR_LENGTH];
-    char class_types[count][STR_LENGTH];
-    for (size_t i = 0; i < count; i++) {
-        char *tokens = strtok(ast_classes[i], "-");
-        strcpy(class_names_upper[i], tokens);
-        strcpy(class_names_lower[i], tokens);
-        char *lower = class_names_lower[i];
-        while (*lower) {
-            *lower = tolower((unsigned char)*lower);
-            lower++;
-        }
-        tokens = strtok(NULL, ":");
-        strcpy(class_types[i], tokens);
     }
 
     fprintf(file,
@@ -90,8 +67,50 @@ void defineAst(char *output_dir, char *name, char ast_classes[][STR_LENGTH],
     }
     fprintf(file, "\t} value;\n} Expr;\n\n");
 
-    fprintf(file, "#endif // EXPR_H\n\n");
+    // Write the function headers
+    fprintf(file, "void visitExpr(Expr *expr);\n");
+    for (size_t i = 0; i < count; i++) {
+        fprintf(file, "void visit%c%s(Expr *expr);\n", class_names_upper[i][0],
+                class_names_lower[i] + 1 * sizeof(char));
+    }
 
+    fprintf(file, "\n#endif // EXPR_H\n\n");
+
+    fclose(file);
+}
+
+void defineVisitorFunctinos(char *path, char class_names_upper[][STR_LENGTH],
+                            char class_names_lower[][STR_LENGTH],
+                            size_t count) {
+    FILE *file = fopen(path, "a");
+    if (file == NULL) {
+        printf("Error: could not open file: %s\n", path);
+        return;
+    }
+
+    // Header guards
+    fprintf(file, "#ifdef EXPR_IMPLEMENTATION\n");
+    fprintf(file, "#undef EXPR_IMPLEMENTATION\n\n");
+
+    // Write the switch function
+    fprintf(file, "void visitExpr(Expr *expr) {\n");
+    fprintf(file, "\tswitch (expr->type) {\n");
+    for (size_t i = 0; i < count; i++) {
+        fprintf(file, "\t\tcase EXPR_%s:\n", class_names_upper[i]);
+        fprintf(file, "\t\t\tvisit%c%s(expr);\n", class_names_upper[i][0],
+                class_names_lower[i] + 1 * sizeof(char));
+        fprintf(file, "\t\t\tbreak;\n");
+    }
+    fprintf(file, "\t}");
+    fprintf(file, "\n}\n\n");
+
+    for (size_t i = 0; i < count; i++) {
+        fprintf(file, "void visit%c%s(Expr *expr) {\n", class_names_upper[i][0],
+                class_names_lower[i] + 1 * sizeof(char));
+        fprintf(file, "}\n\n");
+    }
+
+    fprintf(file, "\n#endif // EXPR_IMPLEMENTATION\n\n");
     fclose(file);
 }
 
@@ -102,7 +121,13 @@ int main(int argc, char *argv[]) {
     }
 
     char *output_dir = argv[1];
-    printf("Output directory: %s\n", output_dir);
+    char *name = "expr_structs";
+    char path[sizeof(output_dir) + sizeof(name) + 6] = "../";
+    strcat(path, output_dir);
+    strcat(path, "/");
+    strcat(path, name);
+    strcat(path, ".h");
+    printf("Output directory path: %s\n", path);
 
     size_t expr_class_count = 4;
     char ast_classes[][STR_LENGTH] = {
@@ -112,7 +137,27 @@ int main(int argc, char *argv[]) {
         "UNARY-Token *token, Expr *right",
     };
 
-    defineAst(output_dir, "expr_structs", ast_classes, expr_class_count);
+    // Spilt into the class and the types
+    char class_names_upper[expr_class_count][STR_LENGTH];
+    char class_names_lower[expr_class_count][STR_LENGTH];
+    char class_types[expr_class_count][STR_LENGTH];
+    for (size_t i = 0; i < expr_class_count; i++) {
+        char *tokens = strtok(ast_classes[i], "-");
+        strcpy(class_names_upper[i], tokens);
+        strcpy(class_names_lower[i], tokens);
+        char *lower = class_names_lower[i];
+        while (*lower) {
+            *lower = tolower((unsigned char)*lower);
+            lower++;
+        }
+        tokens = strtok(NULL, ":");
+        strcpy(class_types[i], tokens);
+    }
+
+    defineAst(path, class_names_upper, class_names_lower, class_types,
+              expr_class_count);
+    defineVisitorFunctinos(path, class_names_upper, class_names_lower,
+                           expr_class_count);
 
     return 0;
 }
