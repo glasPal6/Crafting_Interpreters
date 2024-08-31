@@ -103,6 +103,9 @@ void defineVisitorFunctinos(char *path, char class_names_upper[][STR_LENGTH],
     }
     fprintf(file, "\t}");
     fprintf(file, "\n}\n\n");
+    fprintf(
+        file,
+        "// Do not copy this, as it will overwrite the implementation.\n\n");
 
     for (size_t i = 0; i < count; i++) {
         fprintf(file, "void visit%c%s(Expr *expr) {\n", class_names_upper[i][0],

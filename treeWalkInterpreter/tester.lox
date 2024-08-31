@@ -1,0 +1,22 @@
+fun checkx(x, lim) {
+    while (x >= lim) {
+        print "x is still greater than 10";
+        x = x - 1;
+    }
+}
+
+var x = 20;
+var string = "Ths is a string";
+print string;
+
+if (x <= 10) {
+    print "x is less than or equal to 10";
+} else {
+    print "x is greater than 10";
+}
+
+checkx(x, 10);
+
+for (var i = 0; i < 10; i = i + 1) {
+    print i;
+}

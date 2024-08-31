@@ -12,7 +12,7 @@ void interpret(char *source) {
     TokenList *tokens = NULL;
 
     scanTokens(&tokens, source, &had_error);
-    listPrint(tokens);
+    /*listPrint(tokens);*/
 
     while (tokens != NULL) {
         listPop(&tokens);

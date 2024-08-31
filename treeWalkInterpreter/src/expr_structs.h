@@ -41,7 +41,6 @@ void visitUnary(Expr *expr);
 
 #ifdef EXPR_IMPLEMENTATION
 #undef EXPR_IMPLEMENTATION
-
 void visitExpr(Expr *expr) {
 	switch (expr->type) {
 		case EXPR_GROUPING:
@@ -58,6 +57,8 @@ void visitExpr(Expr *expr) {
 			break;
 	}
 }
+
+// Do not copy this, as it will overwrite the implementation.
 
 void visitGrouping(Expr *expr) {
 }

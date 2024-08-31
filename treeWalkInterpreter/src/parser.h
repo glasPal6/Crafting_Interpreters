@@ -1,0 +1,9 @@
+#ifndef PARSER_H
+#define PARSER_H
+
+#endif // !PARSER_H
+
+#ifdef PARSER_IMPLEMENTATION
+#undef PARSER_IMPLEMENTATION
+
+#endif // PARSER_IMPLEMENTATION
