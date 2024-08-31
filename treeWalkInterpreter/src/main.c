@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "expr.h"
 #include "logging.h"
 #include "scanner.h"
 #include "tokenList.h"
+#include "tokens.h"
 
 void interpret(char *source) {
     bool had_error = false;

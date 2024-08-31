@@ -136,7 +136,8 @@ int main(int argc, char *argv[]) {
     char ast_classes[][STR_LENGTH] = {
         "GROUPING-Expr grouping",
         "BINARY-Expr *left, Token *token, Expr *right",
-        "LITERAL-Token *token, Literal *literal",
+        /*"LITERAL-Token *token, Literal *literal",*/
+        "LITERAL-Token *token",
         "UNARY-Token *token, Expr *right",
     };
 

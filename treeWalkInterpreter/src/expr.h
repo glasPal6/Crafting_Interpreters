@@ -17,7 +17,6 @@ typedef struct {
         } binary;
         struct {
             Token *token;
-            union Literal *literal;
         } literal;
         struct {
             Token *token;
@@ -55,25 +54,25 @@ void visitExpr(Expr *expr) {
 }
 
 void visitGrouping(Expr *expr) {
-    printf("Grouping\n");
+    printf("Grouping\n\t");
     visitExpr((Expr *)expr->value.grouping);
 }
 
 void visitBinary(Expr *expr) {
-    printf("Binary\n");
+    printf("Binary\n\t");
     printToken(*expr->value.binary.token);
     visitExpr((Expr *)expr->value.binary.left);
     visitExpr((Expr *)expr->value.binary.right);
 }
 
 void visitLiteral(Expr *expr) {
-    printf("Literal\n");
+    printf("Literal\n\t");
     printToken(*expr->value.literal.token);
 }
 
 void visitUnary(Expr *expr) {
-    printf("Unary\n");
-    printToken(*expr->value.binary.token);
+    printf("Unary\n\t");
+    printToken(*expr->value.unary.token);
     visitExpr((Expr *)expr->value.unary.right);
 }
 

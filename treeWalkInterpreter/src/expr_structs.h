@@ -22,7 +22,6 @@ typedef struct {
 		} binary;
 		struct {
 			Token *token;
-			union Literal *literal;
 		} literal;
 		struct {
 			Token *token;
@@ -41,6 +40,7 @@ void visitUnary(Expr *expr);
 
 #ifdef EXPR_IMPLEMENTATION
 #undef EXPR_IMPLEMENTATION
+
 void visitExpr(Expr *expr) {
 	switch (expr->type) {
 		case EXPR_GROUPING:
