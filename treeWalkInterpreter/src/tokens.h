@@ -201,13 +201,13 @@ void printToken(Token token) {
         break;
     }
     if (token.type == STRING)
-        printf("%s - %s - %s\n", token_type_string, token.lexeme,
-               token.literal.string);
+        printf("(%i) %s -- %s --- %s\n", token.line, token_type_string,
+               token.lexeme, token.literal.string);
     else if (token.type == NUMBER)
-        printf("%s - %s - %lf\n", token_type_string, token.lexeme,
-               token.literal.number);
+        printf("(%i) %s -- %s --- %lf\n", token.line, token_type_string,
+               token.lexeme, token.literal.number);
     else
-        printf("%s - %s\n", token_type_string, token.lexeme);
+        printf("(%i) %s -- %s\n", token.line, token_type_string, token.lexeme);
 }
 
 #endif // TOKEN_IMPLENEMTATION

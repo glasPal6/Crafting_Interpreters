@@ -15,6 +15,9 @@ typedef struct TokenList {
 void listPushEnd(TokenList **list, Token token);
 void listPushStart(TokenList **list, Token token);
 void listPop(TokenList **list);
+
+Token tokensListIndexOf(TokenList **list, int index);
+
 void listPrint(TokenList *list);
 
 #endif // !TOKENLIST_H
@@ -63,12 +66,25 @@ void listPop(TokenList **list) {
     free(list_node);
 }
 
+Token tokensListIndexOf(TokenList **list, int index) {
+    TokenList *node = *list;
+    while (node != NULL) {
+        if (node->index == index)
+            return node->token;
+        node = node->next;
+    }
+    Token null_token = {
+        .type = EOF_I, .lexeme = NULL, .literal.string = NULL, .line = 0};
+    return null_token;
+}
+
 void listPrint(TokenList *list) {
     if (list == NULL) {
         printf("List has no Tokens\n");
         return;
     }
     while (list != NULL) {
+        printf("[%d] ", list->index);
         printToken(list->token);
         list = list->next;
     }
