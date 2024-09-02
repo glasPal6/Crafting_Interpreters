@@ -33,11 +33,10 @@ void listPushEnd(TokenList **list, Token token) {
         return;
     } else {
         TokenList *last = *list;
-        while (last->next != NULL) {
+        while (last->next != NULL)
             last = last->next;
-            node->index++;
-        }
         last->next = node;
+        node->index = last->index + 1;
     }
 }
 
