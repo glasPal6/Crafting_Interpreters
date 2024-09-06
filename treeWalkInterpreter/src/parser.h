@@ -2,8 +2,9 @@
 #define PARSER_H
 
 #include "expr.h"
-#include "scanner.h"
-#include <stdio.h>
+#include "logging.h"
+#include "tokenList.h"
+#include <stdbool.h>
 
 typedef struct {
     int current;
@@ -144,6 +145,7 @@ Expr unary(Parser *parser, TokenList **tokens, bool *had_error) {
 
     Expr expr = primary(parser, tokens, had_error);
     printf("At unary\n");
+    visitExpr(&expr);
 
     return expr;
 }
