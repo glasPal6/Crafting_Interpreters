@@ -12,14 +12,14 @@ typedef struct {
         struct Expr *grouping;
         struct {
             struct Expr *left;
-            Token *token;
+            Token token;
             struct Expr *right;
         } binary;
         struct {
-            Token *token;
+            Token token;
         } literal;
         struct {
-            Token *token;
+            Token token;
             struct Expr *right;
         } unary;
     } value;
@@ -60,19 +60,19 @@ void visitGrouping(Expr *expr) {
 
 void visitBinary(Expr *expr) {
     printf("Binary\n\t");
-    printToken(*expr->value.binary.token);
+    printToken(expr->value.binary.token);
     visitExpr((Expr *)expr->value.binary.left);
     visitExpr((Expr *)expr->value.binary.right);
 }
 
 void visitLiteral(Expr *expr) {
     printf("Literal\n\t");
-    printToken(*expr->value.literal.token);
+    printToken(expr->value.literal.token);
 }
 
 void visitUnary(Expr *expr) {
     printf("Unary\n\t");
-    printToken(*expr->value.unary.token);
+    printToken(expr->value.unary.token);
     visitExpr((Expr *)expr->value.unary.right);
 }
 

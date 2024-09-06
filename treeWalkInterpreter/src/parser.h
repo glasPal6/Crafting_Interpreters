@@ -45,157 +45,133 @@ Expr parseTokens(TokenList **tokens, bool *had_error) {
 }
 
 Expr expression(Parser *parser, TokenList **tokens, bool *had_error) {
-    printf("At expression\n");
     Expr expr = equality(parser, tokens, had_error);
-    printf("At expression\n");
     return expr;
 }
 
 Expr equality(Parser *parser, TokenList **tokens, bool *had_error) {
-    printf("At equality\n");
     Expr expr = comparison(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {BANG_EQUAL, EQUAL_EQUAL};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
         Expr right = comparison(parser, tokens, had_error);
-        printf("\tComparison\n");
         Expr old_expr = {.type = expr.type, .value = expr.value};
         expr = (Expr){.type = EXPR_BINARY,
                       .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = &op,
+                                       .token = op,
                                        .right = (struct Expr *)&right}};
     }
 
-    printf("At equality\n");
     return expr;
 }
 
 Expr comparison(Parser *parser, TokenList **tokens, bool *had_error) {
-    printf("At comparison\n");
     Expr expr = term(parser, tokens, had_error);
 
     TokenType checkTokens[4] = {GREATER, GREATER_EQUAL, LESS, LESS_EQUAL};
     while (parserMatch(parser, tokens, checkTokens, 4)) {
         Token op = parserPrevious(parser, tokens);
         Expr right = term(parser, tokens, had_error);
-        printf("\tTerm\n");
         Expr old_expr = {.type = expr.type, .value = expr.value};
         expr = (Expr){.type = EXPR_BINARY,
                       .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = &op,
+                                       .token = op,
                                        .right = (struct Expr *)&right}};
     }
 
-    printf("At comparison\n");
     return expr;
 }
 
 Expr term(Parser *parser, TokenList **tokens, bool *had_error) {
-    printf("At term\n");
     Expr expr = factor(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {MINUS, PLUS};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
         Expr right = factor(parser, tokens, had_error);
-        printf("\tFactor\n");
         Expr old_expr = {.type = expr.type, .value = expr.value};
         expr = (Expr){.type = EXPR_BINARY,
                       .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = &op,
+                                       .token = op,
                                        .right = (struct Expr *)&right}};
     }
 
-    printf("At term\n");
     return expr;
 }
 
 Expr factor(Parser *parser, TokenList **tokens, bool *had_error) {
-    printf("At factor\n");
     Expr expr = unary(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {SLASH, STAR};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
         Expr right = unary(parser, tokens, had_error);
-        printf("\tUnary\n");
         Expr old_expr = {.type = expr.type, .value = expr.value};
         expr = (Expr){.type = EXPR_BINARY,
                       .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = &op,
+                                       .token = op,
                                        .right = (struct Expr *)&right}};
     }
 
-    printf("At factor\n");
     return expr;
 }
 
 Expr unary(Parser *parser, TokenList **tokens, bool *had_error) {
-    printf("At unary\n");
     TokenType checkTokens[2] = {BANG, MINUS};
     if (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
         Expr right = unary(parser, tokens, had_error);
-        printf("\tUnary\n");
         return (Expr){
             .type = EXPR_UNARY,
-            .value.unary = {.token = &op, .right = (struct Expr *)&right}};
+            .value.unary = {.token = op, .right = (struct Expr *)&right}};
     }
 
     Expr expr = primary(parser, tokens, had_error);
-    printf("At unary\n");
-    visitExpr(&expr);
 
     return expr;
 }
 
 Expr primary(Parser *parser, TokenList **tokens, bool *had_error) {
-    printf("At primary\n");
     TokenType checkToken[2] = {NIL, NIL};
 
     checkToken[0] = FALSE;
     if (parserMatch(parser, tokens, checkToken, 1)) {
-        printf("\tFalse Token\n");
         Token op = (Token){.type = FALSE,
                            .lexeme = "false",
                            .literal.string = "false",
                            .line = -1};
-        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = &op}};
+        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = op}};
         return expr;
     }
     checkToken[0] = TRUE;
     if (parserMatch(parser, tokens, checkToken, 1)) {
-        printf("\tTrue Token\n");
         Token op = (Token){.type = TRUE,
                            .lexeme = "true",
                            .literal.string = "true",
                            .line = -1};
-        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = &op}};
+        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = op}};
         return expr;
     }
     checkToken[0] = NIL;
     if (parserMatch(parser, tokens, checkToken, 1)) {
-        printf("\tNil Token\n");
         Token op = (Token){
             .type = NIL, .lexeme = "", .literal.string = "", .line = -1};
-        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = &op}};
+        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = op}};
         return expr;
     }
 
     checkToken[0] = NUMBER;
     checkToken[1] = STRING;
     if (parserMatch(parser, tokens, checkToken, 2)) {
-        printf("\tNumber String Token\n");
         Token tokenLiteral = parserPrevious(parser, tokens);
         Expr expr = {.type = EXPR_LITERAL,
-                     .value.literal = {.token = &tokenLiteral}};
+                     .value.literal = {.token = tokenLiteral}};
         return expr;
     }
 
     checkToken[0] = LEFT_PAREN;
     if (parserMatch(parser, tokens, checkToken, 1)) {
-        printf("\tLeft Paren Token\n");
         Expr expr = expression(parser, tokens, had_error);
         parserConsume(parser, tokens, RIGHT_PAREN,
                       "Expect ')' after expression.", had_error);
@@ -210,7 +186,7 @@ Expr primary(Parser *parser, TokenList **tokens, bool *had_error) {
     Token null_literal = {
         .type = EOF_I, .lexeme = "", .literal.string = "", .line = -1};
     Expr expr = {.type = EXPR_LITERAL,
-                 .value.literal = {.token = &null_literal}};
+                 .value.literal = {.token = null_literal}};
     return expr;
 }
 

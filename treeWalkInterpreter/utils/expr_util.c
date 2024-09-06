@@ -135,10 +135,10 @@ int main(int argc, char *argv[]) {
     size_t expr_class_count = 4;
     char ast_classes[][STR_LENGTH] = {
         "GROUPING-Expr grouping",
-        "BINARY-Expr *left, Token *token, Expr *right",
-        /*"LITERAL-Token *token, Literal *literal",*/
-        "LITERAL-Token *token",
-        "UNARY-Token *token, Expr *right",
+        "BINARY-Expr *left, Token token, Expr *right",
+        /*"LITERAL-Token token, Literal *literal",*/
+        "LITERAL-Token token",
+        "UNARY-Token token, Expr *right",
     };
 
     // Spilt into the class and the types

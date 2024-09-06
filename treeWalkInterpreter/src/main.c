@@ -76,29 +76,29 @@ void runPrompt() {
 
 int main(int argc, char *argv[]) {
     // Test for the expr implementation
-    // Token tok1 = {
-    //     .type = NUMBER, .lexeme = "123", .literal.number = 123, .line = 1};
-    // Token tok2 = {
-    //     .type = NUMBER, .lexeme = "45.67", .literal.number = 45.67, .line =
-    //     1};
-    // Token tok3 = {.type = MINUS, .lexeme = "-", .line = 1};
-    // Token tok4 = {.type = STAR, .lexeme = "*", .line = 1};
-    // Expr lit1 = {.type = EXPR_LITERAL, .value.literal = {.token = &tok1}};
-    // Expr lit2 = {.type = EXPR_LITERAL, .value.literal = {.token = &tok2}};
-    // Expr unary = {
-    //     .type = EXPR_UNARY,
-    //     .value.unary = {.token = &tok3, .right = (struct Expr *)&lit1}};
-    // Expr group = {.type = EXPR_GROUPING,
-    //               .value.grouping = (struct Expr *)&lit2};
-    // Expr expr = {.type = EXPR_BINARY,
-    //              .value.binary = {
-    //                  .left = (struct Expr *)&unary,
-    //                  .token = &tok4,
-    //                  .right = (struct Expr *)&group,
-    //              }};
-
-    // visitExpr(&expr);
-    // return 0;
+    /*Token tok1 = {*/
+    /*    .type = NUMBER, .lexeme = "123", .literal.number = 123, .line = 1};*/
+    /*Token tok2 = {*/
+    /*    .type = NUMBER, .lexeme = "45.67", .literal.number = 45.67, .line =
+     * 1};*/
+    /*Token tok3 = {.type = MINUS, .lexeme = "-", .line = 1};*/
+    /*Token tok4 = {.type = STAR, .lexeme = "*", .line = 1};*/
+    /*Expr lit1 = {.type = EXPR_LITERAL, .value.literal = {.token = tok1}};*/
+    /*Expr lit2 = {.type = EXPR_LITERAL, .value.literal = {.token = tok2}};*/
+    /*Expr unary = {*/
+    /*    .type = EXPR_UNARY,*/
+    /*    .value.unary = {.token = tok3, .right = (struct Expr *)&lit1}};*/
+    /*Expr group = {.type = EXPR_GROUPING,*/
+    /*              .value.grouping = (struct Expr *)&lit2};*/
+    /*Expr expr = {.type = EXPR_BINARY,*/
+    /*             .value.binary = {*/
+    /*                 .left = (struct Expr *)&unary,*/
+    /*                 .token = tok4,*/
+    /*                 .right = (struct Expr *)&group,*/
+    /*             }};*/
+    /**/
+    /*visitExpr(&expr);*/
+    /*return 0;*/
 
     // Check the args for the file
     if (argc > 2) {
