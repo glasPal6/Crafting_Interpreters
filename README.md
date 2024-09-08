@@ -7,9 +7,4 @@ Current Position is: https://craftinginterpreters.com/parsing-expressions.html
 
 ## Current Issues
 
-Current issue is that it is not saving the expressions into the tree.\
-It gets the correct root expression but not the rest. Seems to be a memory allocation problem.
-Options:
-    - Make the tokens used be the memory tokens.
-    - Make the expr not use pointers.
 

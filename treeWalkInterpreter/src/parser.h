@@ -10,15 +10,15 @@ typedef struct {
     int current;
 } Parser;
 
-Expr parseTokens(TokenList **tokens, bool *had_error);
+Expr *parseTokens(TokenList **tokens, bool *had_error);
 
-Expr expression(Parser *parser, TokenList **tokens, bool *had_error);
-Expr equality(Parser *parser, TokenList **tokens, bool *had_error);
-Expr comparison(Parser *parser, TokenList **tokens, bool *had_error);
-Expr term(Parser *parser, TokenList **tokens, bool *had_error);
-Expr factor(Parser *parser, TokenList **tokens, bool *had_error);
-Expr unary(Parser *parser, TokenList **tokens, bool *had_error);
-Expr primary(Parser *parser, TokenList **tokens, bool *had_error);
+Expr *expression(Parser *parser, TokenList **tokens, bool *had_error);
+Expr *equality(Parser *parser, TokenList **tokens, bool *had_error);
+Expr *comparison(Parser *parser, TokenList **tokens, bool *had_error);
+Expr *term(Parser *parser, TokenList **tokens, bool *had_error);
+Expr *factor(Parser *parser, TokenList **tokens, bool *had_error);
+Expr *unary(Parser *parser, TokenList **tokens, bool *had_error);
+Expr *primary(Parser *parser, TokenList **tokens, bool *had_error);
 
 bool parserMatch(Parser *parser, TokenList **tokens, TokenType *types,
                  size_t count);
@@ -37,102 +37,103 @@ void parserSynchronization(Parser *parser, TokenList **tokens);
 #ifdef PARSER_IMPLEMENTATION
 #undef PARSER_IMPLEMENTATION
 
-Expr parseTokens(TokenList **tokens, bool *had_error) {
+Expr *parseTokens(TokenList **tokens, bool *had_error) {
     Parser parser = {.current = 0};
-    Expr expr = expression(&parser, tokens, had_error);
+    Expr *expr = expression(&parser, tokens, had_error);
     // expr is EOF if had_error is true
     return expr;
 }
 
-Expr expression(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr expr = equality(parser, tokens, had_error);
+Expr *expression(Parser *parser, TokenList **tokens, bool *had_error) {
+    Expr *expr = equality(parser, tokens, had_error);
     return expr;
 }
 
-Expr equality(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr expr = comparison(parser, tokens, had_error);
+Expr *equality(Parser *parser, TokenList **tokens, bool *had_error) {
+    Expr *expr = comparison(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {BANG_EQUAL, EQUAL_EQUAL};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr right = comparison(parser, tokens, had_error);
-        Expr old_expr = {.type = expr.type, .value = expr.value};
-        expr = (Expr){.type = EXPR_BINARY,
-                      .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = op,
-                                       .right = (struct Expr *)&right}};
+        Expr *right = comparison(parser, tokens, had_error);
+        Expr *old_expr = expr;
+        expr = malloc(sizeof(Expr));
+        expr->type = EXPR_BINARY;
+        expr->value.binary.left = old_expr, expr->value.binary.token = op,
+        expr->value.binary.right = right;
     }
 
     return expr;
 }
 
-Expr comparison(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr expr = term(parser, tokens, had_error);
+Expr *comparison(Parser *parser, TokenList **tokens, bool *had_error) {
+    Expr *expr = term(parser, tokens, had_error);
 
     TokenType checkTokens[4] = {GREATER, GREATER_EQUAL, LESS, LESS_EQUAL};
     while (parserMatch(parser, tokens, checkTokens, 4)) {
         Token op = parserPrevious(parser, tokens);
-        Expr right = term(parser, tokens, had_error);
-        Expr old_expr = {.type = expr.type, .value = expr.value};
-        expr = (Expr){.type = EXPR_BINARY,
-                      .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = op,
-                                       .right = (struct Expr *)&right}};
+        Expr *right = term(parser, tokens, had_error);
+        Expr *old_expr = expr;
+        expr = malloc(sizeof(Expr));
+        expr->type = EXPR_BINARY;
+        expr->value.binary.left = old_expr, expr->value.binary.token = op,
+        expr->value.binary.right = right;
     }
 
     return expr;
 }
 
-Expr term(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr expr = factor(parser, tokens, had_error);
+Expr *term(Parser *parser, TokenList **tokens, bool *had_error) {
+    Expr *expr = factor(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {MINUS, PLUS};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr right = factor(parser, tokens, had_error);
-        Expr old_expr = {.type = expr.type, .value = expr.value};
-        expr = (Expr){.type = EXPR_BINARY,
-                      .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = op,
-                                       .right = (struct Expr *)&right}};
+        Expr *right = factor(parser, tokens, had_error);
+        Expr *old_expr = expr;
+        expr = malloc(sizeof(Expr));
+        expr->type = EXPR_BINARY;
+        expr->value.binary.left = old_expr, expr->value.binary.token = op,
+        expr->value.binary.right = right;
     }
 
     return expr;
 }
 
-Expr factor(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr expr = unary(parser, tokens, had_error);
+Expr *factor(Parser *parser, TokenList **tokens, bool *had_error) {
+    Expr *expr = unary(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {SLASH, STAR};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr right = unary(parser, tokens, had_error);
-        Expr old_expr = {.type = expr.type, .value = expr.value};
-        expr = (Expr){.type = EXPR_BINARY,
-                      .value.binary = {.left = (struct Expr *)&old_expr,
-                                       .token = op,
-                                       .right = (struct Expr *)&right}};
+        Expr *right = unary(parser, tokens, had_error);
+        Expr *old_expr = expr;
+        expr = malloc(sizeof(Expr));
+        expr->type = EXPR_BINARY;
+        expr->value.binary.left = old_expr, expr->value.binary.token = op,
+        expr->value.binary.right = right;
     }
 
     return expr;
 }
 
-Expr unary(Parser *parser, TokenList **tokens, bool *had_error) {
+Expr *unary(Parser *parser, TokenList **tokens, bool *had_error) {
     TokenType checkTokens[2] = {BANG, MINUS};
     if (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr right = unary(parser, tokens, had_error);
-        return (Expr){
-            .type = EXPR_UNARY,
-            .value.unary = {.token = op, .right = (struct Expr *)&right}};
+        Expr *right = unary(parser, tokens, had_error);
+        Expr *expr = malloc(sizeof(Expr));
+        expr->type = EXPR_UNARY;
+        expr->value.unary.token = op, expr->value.unary.right = right;
+        return expr;
     }
 
-    Expr expr = primary(parser, tokens, had_error);
+    Expr *expr = primary(parser, tokens, had_error);
 
     return expr;
 }
 
-Expr primary(Parser *parser, TokenList **tokens, bool *had_error) {
+Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     TokenType checkToken[2] = {NIL, NIL};
 
     checkToken[0] = FALSE;
@@ -141,7 +142,9 @@ Expr primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .lexeme = "false",
                            .literal.string = "false",
                            .line = -1};
-        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = op}};
+        Expr *expr = malloc(sizeof(Expr));
+        expr->type = EXPR_LITERAL;
+        expr->value.literal.token = op;
         return expr;
     }
     checkToken[0] = TRUE;
@@ -150,14 +153,18 @@ Expr primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .lexeme = "true",
                            .literal.string = "true",
                            .line = -1};
-        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = op}};
+        Expr *expr = malloc(sizeof(Expr));
+        expr->type = EXPR_LITERAL;
+        expr->value.literal.token = op;
         return expr;
     }
     checkToken[0] = NIL;
     if (parserMatch(parser, tokens, checkToken, 1)) {
         Token op = (Token){
             .type = NIL, .lexeme = "", .literal.string = "", .line = -1};
-        Expr expr = {.type = EXPR_LITERAL, .value.literal = {.token = op}};
+        Expr *expr = malloc(sizeof(Expr));
+        expr->type = EXPR_LITERAL;
+        expr->value.literal.token = op;
         return expr;
     }
 
@@ -165,18 +172,20 @@ Expr primary(Parser *parser, TokenList **tokens, bool *had_error) {
     checkToken[1] = STRING;
     if (parserMatch(parser, tokens, checkToken, 2)) {
         Token tokenLiteral = parserPrevious(parser, tokens);
-        Expr expr = {.type = EXPR_LITERAL,
-                     .value.literal = {.token = tokenLiteral}};
+        Expr *expr = malloc(sizeof(Expr));
+        expr->type = EXPR_LITERAL;
+        expr->value.literal.token = tokenLiteral;
         return expr;
     }
 
     checkToken[0] = LEFT_PAREN;
     if (parserMatch(parser, tokens, checkToken, 1)) {
-        Expr expr = expression(parser, tokens, had_error);
+        Expr *expr = expression(parser, tokens, had_error);
         parserConsume(parser, tokens, RIGHT_PAREN,
                       "Expect ')' after expression.", had_error);
-        Expr expr_grouping = {.type = EXPR_GROUPING,
-                              .value.grouping = (struct Expr *)&expr};
+        Expr *expr_grouping = malloc(sizeof(Expr));
+        expr_grouping->type = EXPR_GROUPING;
+        expr_grouping->value.grouping = (struct Expr *)&expr;
         return expr_grouping;
     }
 
@@ -185,8 +194,9 @@ Expr primary(Parser *parser, TokenList **tokens, bool *had_error) {
     // Check this
     Token null_literal = {
         .type = EOF_I, .lexeme = "", .literal.string = "", .line = -1};
-    Expr expr = {.type = EXPR_LITERAL,
-                 .value.literal = {.token = null_literal}};
+    Expr *expr = malloc(sizeof(Expr));
+    expr->type = EXPR_LITERAL;
+    expr->value.literal.token = null_literal;
     return expr;
 }
 

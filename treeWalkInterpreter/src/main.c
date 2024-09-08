@@ -17,12 +17,14 @@ void interpret(char *source) {
     scanTokens(&tokens, source, &had_error);
     listPrint(tokens);
 
-    Expr expression = parseTokens(&tokens, &had_error);
-    visitExpr(&expression);
+    Expr *expression = parseTokens(&tokens, &had_error);
+    visitExpr(expression, 0);
 
     while (tokens != NULL) {
         listPop(&tokens);
     }
+
+    clearExpr(expression);
 
     if (had_error)
         exit(1);

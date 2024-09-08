@@ -30,7 +30,7 @@ void defineAst(char *path, char class_names_upper[][STR_LENGTH],
     fprintf(file, "} ExprType;\n\n");
 
     // Write the struct
-    fprintf(file, "typedef struct {\n\tExprType type;\n\tunion {\n");
+    fprintf(file, "typedef struct Expr {\n\tExprType type;\n\tunion {\n");
     for (size_t i = 0; i < count; i++) {
         // Special Grouping case
         if (strcmp(class_names_lower[i], "grouping") == 0) {
@@ -68,9 +68,11 @@ void defineAst(char *path, char class_names_upper[][STR_LENGTH],
     fprintf(file, "\t} value;\n} Expr;\n\n");
 
     // Write the function headers
-    fprintf(file, "void visitExpr(Expr *expr);\n");
+    fprintf(file, "void clearExpr(Expr *expr);\n");
+    fprintf(file, "void visitExpr(Expr *expr, uint level);\n");
     for (size_t i = 0; i < count; i++) {
-        fprintf(file, "void visit%c%s(Expr *expr);\n", class_names_upper[i][0],
+        fprintf(file, "void visit%c%s(Expr *expr, uint level);\n",
+                class_names_upper[i][0],
                 class_names_lower[i] + 1 * sizeof(char));
     }
 
@@ -93,7 +95,7 @@ void defineVisitorFunctinos(char *path, char class_names_upper[][STR_LENGTH],
     fprintf(file, "#undef EXPR_IMPLEMENTATION\n\n");
 
     // Write the switch function
-    fprintf(file, "void visitExpr(Expr *expr) {\n");
+    fprintf(file, "void visitExpr(Expr *expr, uint level) {\n");
     fprintf(file, "\tswitch (expr->type) {\n");
     for (size_t i = 0; i < count; i++) {
         fprintf(file, "\t\tcase EXPR_%s:\n", class_names_upper[i]);
@@ -108,7 +110,8 @@ void defineVisitorFunctinos(char *path, char class_names_upper[][STR_LENGTH],
         "// Do not copy this, as it will overwrite the implementation.\n\n");
 
     for (size_t i = 0; i < count; i++) {
-        fprintf(file, "void visit%c%s(Expr *expr) {\n", class_names_upper[i][0],
+        fprintf(file, "void visit%c%s(Expr *expr, uint level) {\n",
+                class_names_upper[i][0],
                 class_names_lower[i] + 1 * sizeof(char));
         fprintf(file, "}\n\n");
     }
