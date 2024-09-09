@@ -81,9 +81,8 @@ void defineAst(char *path, char class_names_upper[][STR_LENGTH],
     fclose(file);
 }
 
-void defineVisitorFunctinos(char *path, char class_names_upper[][STR_LENGTH],
-                            char class_names_lower[][STR_LENGTH],
-                            size_t count) {
+void defineFunctinos(char *path, char class_names_upper[][STR_LENGTH],
+                     char class_names_lower[][STR_LENGTH], size_t count) {
     FILE *file = fopen(path, "a");
     if (file == NULL) {
         printf("Error: could not open file: %s\n", path);
@@ -94,12 +93,33 @@ void defineVisitorFunctinos(char *path, char class_names_upper[][STR_LENGTH],
     fprintf(file, "#ifdef EXPR_IMPLEMENTATION\n");
     fprintf(file, "#undef EXPR_IMPLEMENTATION\n\n");
 
+    // Clear Memory function
+    fprintf(file, "void clearExpr(Expr *expr) {\n");
+    fprintf(file, "\tswitch (expr->type) {\n");
+    for (size_t i = 0; i < count; i++) {
+        fprintf(file, "\t\tcase EXPR_%s:\n", class_names_upper[i]);
+        if (strcmp(class_names_upper[i], "GROUPING") == 0) {
+            fprintf(file, "\t\t\tclearExpr(expr->value.grouping);\n");
+        } else if (strcmp(class_names_upper[i], "BINARY") == 0) {
+            fprintf(file, "\t\t\tclearExpr(expr->value.binary.left);\n");
+            fprintf(file, "\t\t\tclearExpr(expr->value.binary.right);\n");
+        } else if (strcmp(class_names_upper[i], "LITERAL") == 0) {
+        } else if (strcmp(class_names_upper[i], "UNARY") == 0) {
+            fprintf(file, "\t\t\tclearExpr(expr->value.unary.right);\n");
+        }
+        fprintf(file, "\t\t\tfree(expr);\n");
+        fprintf(file, "\t\t\tbreak;\n");
+    }
+    fprintf(file, "\t}");
+    fprintf(file, "\n}\n\n");
+
     // Write the switch function
     fprintf(file, "void visitExpr(Expr *expr, uint level) {\n");
     fprintf(file, "\tswitch (expr->type) {\n");
     for (size_t i = 0; i < count; i++) {
         fprintf(file, "\t\tcase EXPR_%s:\n", class_names_upper[i]);
-        fprintf(file, "\t\t\tvisit%c%s(expr);\n", class_names_upper[i][0],
+        fprintf(file, "\t\t\tvisit%c%s(expr, level);\n",
+                class_names_upper[i][0],
                 class_names_lower[i] + 1 * sizeof(char));
         fprintf(file, "\t\t\tbreak;\n");
     }
@@ -163,8 +183,8 @@ int main(int argc, char *argv[]) {
 
     defineAst(path, class_names_upper, class_names_lower, class_types,
               expr_class_count);
-    defineVisitorFunctinos(path, class_names_upper, class_names_lower,
-                           expr_class_count);
+    defineFunctinos(path, class_names_upper, class_names_lower,
+                    expr_class_count);
 
     return 0;
 }

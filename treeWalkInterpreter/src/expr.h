@@ -2,14 +2,12 @@
 #define EXPR_H
 
 #include "tokens.h"
-#include <sys/types.h>
 
 // Generated this with code
 typedef enum { EXPR_GROUPING, EXPR_BINARY, EXPR_LITERAL, EXPR_UNARY } ExprType;
 
 typedef struct Expr {
     ExprType type;
-    uint level;
     union {
         struct Expr *grouping;
         struct {
@@ -54,13 +52,16 @@ void clearExpr(Expr *expr) {
         free(expr);
         break;
     case EXPR_UNARY:
-        free(expr);
         clearExpr(expr->value.unary.right);
+        free(expr);
         break;
     }
 }
 
 void visitExpr(Expr *expr, uint level) {
+    for (uint i = 0; i < level; i++) {
+        printf("| ");
+    }
     switch (expr->type) {
     case EXPR_GROUPING:
         visitGrouping(expr, level);
@@ -78,24 +79,24 @@ void visitExpr(Expr *expr, uint level) {
 }
 
 void visitGrouping(Expr *expr, uint level) {
-    printf("(%i) Grouping\n\t", level);
+    printf("(%i) Grouping: ", level);
     visitExpr((Expr *)expr->value.grouping, level + 1);
 }
 
 void visitBinary(Expr *expr, uint level) {
-    printf("(%i) Binary\n\t", level);
+    printf("(%i) Binary: ", level);
     printToken(expr->value.binary.token);
     visitExpr((Expr *)expr->value.binary.left, level + 1);
     visitExpr((Expr *)expr->value.binary.right, level + 1);
 }
 
 void visitLiteral(Expr *expr, uint level) {
-    printf("(%i) Literal\n\t", level);
+    printf("(%i) Literal: ", level);
     printToken(expr->value.literal.token);
 }
 
 void visitUnary(Expr *expr, uint level) {
-    printf("(%i) Unary\n\t", level);
+    printf("(%i) Unary: ", level);
     printToken(expr->value.unary.token);
     visitExpr((Expr *)expr->value.unary.right, level + 1);
 }
