@@ -28,8 +28,8 @@ bool parserIsAtEnd(Parser *parser, TokenList **tokens);
 Token parserPeek(Parser *parser, TokenList **tokens);
 Token parserPrevious(Parser *parser, TokenList **tokens);
 
-void parserConsume(Parser *parser, TokenList **tokens, TokenType type,
-                   char *message, bool *had_error);
+Token parserConsume(Parser *parser, TokenList **tokens, TokenType type,
+                    char *message, bool *had_error);
 void parserSynchronization(Parser *parser, TokenList **tokens);
 
 #endif // !PARSER_H
@@ -185,7 +185,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                       "Expect ')' after expression.", had_error);
         Expr *expr_grouping = malloc(sizeof(Expr));
         expr_grouping->type = EXPR_GROUPING;
-        expr_grouping->value.grouping = (struct Expr *)&expr;
+        expr_grouping->value.grouping = expr;
         return expr_grouping;
     }
 
@@ -237,13 +237,16 @@ Token parserPrevious(Parser *parser, TokenList **tokens) {
     return tokensListIndexOf(tokens, parser->current - 1);
 }
 
-void parserConsume(Parser *parser, TokenList **tokens, TokenType type,
-                   char *message, bool *had_error) {
+Token parserConsume(Parser *parser, TokenList **tokens, TokenType type,
+                    char *message, bool *had_error) {
     if (parserCheck(parser, tokens, type)) {
-        parserAdvance(parser, tokens);
+        return parserAdvance(parser, tokens);
     }
 
     errorToken(parserPeek(parser, tokens), message, had_error);
+    Token null_literal = {
+        .type = EOF_I, .lexeme = "", .literal.string = "", .line = -1};
+    return null_literal;
 }
 
 void parserSynchronization(Parser *parser, TokenList **tokens) {

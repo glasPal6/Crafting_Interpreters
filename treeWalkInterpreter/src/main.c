@@ -12,18 +12,19 @@
 void interpret(char *source) {
     bool had_error = false;
 
+    // Parse the files
     TokenList *tokens = NULL;
-
     scanTokens(&tokens, source, &had_error);
-    listPrint(tokens);
-
     Expr *expression = parseTokens(&tokens, &had_error);
-    visitExpr(expression, 0);
 
+    // Print the results
+    listPrint(tokens);
+    printExpr(expression, 0);
+
+    // Clear the memory
     while (tokens != NULL) {
         listPop(&tokens);
     }
-
     clearExpr(expression);
 
     if (had_error)
