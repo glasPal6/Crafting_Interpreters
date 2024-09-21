@@ -141,7 +141,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     if (parserMatch(parser, tokens, checkToken, 1)) {
         Token op = (Token){.type = FALSE,
                            .lexeme = "false",
-                           .literal.object.number = 0,
+                           .literal.object.boolean = 0,
                            .literal.type = BOOL_LITERAL,
                            .line = -1};
         Expr *expr = malloc(sizeof(Expr));
@@ -153,7 +153,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     if (parserMatch(parser, tokens, checkToken, 1)) {
         Token op = (Token){.type = TRUE,
                            .lexeme = "true",
-                           .literal.object.number = 1,
+                           .literal.object.boolean = 1,
                            .literal.type = BOOL_LITERAL,
                            .line = -1};
         Expr *expr = malloc(sizeof(Expr));

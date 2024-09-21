@@ -65,6 +65,7 @@ typedef enum {
 union Literal_union {
     double number;
     char *string;
+    bool boolean;
 };
 
 typedef struct {
@@ -81,6 +82,7 @@ typedef struct {
 
 void freeToken(Token *token);
 void printToken(Token token);
+void printLiteralObj(Literal literal);
 
 #endif // TOKENS_H
 
@@ -222,6 +224,17 @@ void printToken(Token token) {
                token.lexeme, token.literal.object.number);
     else
         printf("(%i) %s -- %s\n", token.line, token_type_string, token.lexeme);
+}
+
+void printLiteralObj(Literal literal) {
+    if (literal.type == STRING_LITERAL)
+        printf("String: %s\n", literal.object.string);
+    else if (literal.type == NUMBER_LITERAL)
+        printf("Number: %lf\n", literal.object.number);
+    else if (literal.type == BOOL_LITERAL)
+        printf("Boolean: %s\n", literal.object.boolean ? "True" : "False");
+    else
+        printf("Error: Literal type(s) error\n");
 }
 
 #endif // TOKEN_IMPLENEMTATION

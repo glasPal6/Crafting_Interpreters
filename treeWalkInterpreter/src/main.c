@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "expr.h"
+#include "interpreter.h"
 #include "logging.h"
 #include "parser.h"
 #include "scanner.h"
@@ -16,10 +17,17 @@ void interpret(char *source) {
     TokenList *tokens = NULL;
     scanTokens(&tokens, source, &had_error);
     Expr *expression = parseTokens(&tokens, &had_error);
+    Literal literal = visitExpr(expression);
+    /*interpretExpr(expression);*/
 
     // Print the results
-    // listPrint(tokens);
+    printf("%s", source);
+    printf("\n");
+    listPrint(tokens);
+    printf("\n");
     printExpr(expression, 0);
+    printf("\n");
+    printLiteralObj(literal);
 
     // Clear the memory
     while (tokens != NULL) {

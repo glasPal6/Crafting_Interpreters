@@ -233,9 +233,11 @@ void scannerAddString(TokenList **list, Scanner *scanner, char *source,
     // Consume the last '"'
     scannerAdvance(scanner, source);
 
-    char *text = (char *)malloc(scanner->current - scanner->start + 1);
-    memcpy(text, source + scanner->start, scanner->current - scanner->start);
-    text[scanner->current - scanner->start] = '\0';
+    // Remove the quotes
+    char *text = (char *)malloc(scanner->current - scanner->start + 1 - 2);
+    memcpy(text, source + scanner->start + 1,
+           scanner->current - scanner->start - 2);
+    text[scanner->current - scanner->start - 2] = '\0';
 
     scannerAddToken(list, scanner, source, text, STRING);
 }
