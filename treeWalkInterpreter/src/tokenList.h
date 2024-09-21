@@ -73,8 +73,11 @@ Token tokensListIndexOf(TokenList **list, int index) {
             return node->token;
         node = node->next;
     }
-    Token null_token = {
-        .type = EOF_I, .lexeme = NULL, .literal.string = NULL, .line = 0};
+    Token null_token = {.type = EOF_I,
+                        .lexeme = NULL,
+                        .literal.object.string = NULL,
+                        .literal.type = NONE_LITERAL,
+                        .line = 0};
     return null_token;
 }
 

@@ -1,8 +1,10 @@
 #ifndef TOKENS_H
 #define TOKENS_H
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 typedef enum {
     // Single character tokens
     LEFT_PAREN,
@@ -53,15 +55,27 @@ typedef enum {
     EOF_I
 } TokenType;
 
-union Literal {
+typedef enum {
+    STRING_LITERAL,
+    NUMBER_LITERAL,
+    BOOL_LITERAL,
+    NONE_LITERAL
+} LiteralType;
+
+union Literal_union {
     double number;
     char *string;
 };
 
 typedef struct {
+    LiteralType type;
+    union Literal_union object;
+} Literal;
+
+typedef struct {
     TokenType type;
     char *lexeme;
-    union Literal literal;
+    Literal literal;
     int line;
 } Token;
 
@@ -76,7 +90,7 @@ void printToken(Token token);
 void freeToken(Token *token) {
     free(token->lexeme);
     if (token->type == STRING)
-        free(token->literal.string);
+        free(token->literal.object.string);
 }
 
 void printToken(Token token) {
@@ -202,10 +216,10 @@ void printToken(Token token) {
     }
     if (token.type == STRING)
         printf("(%i) %s -- %s --- %s\n", token.line, token_type_string,
-               token.lexeme, token.literal.string);
+               token.lexeme, token.literal.object.string);
     else if (token.type == NUMBER)
         printf("(%i) %s -- %s --- %lf\n", token.line, token_type_string,
-               token.lexeme, token.literal.number);
+               token.lexeme, token.literal.object.number);
     else
         printf("(%i) %s -- %s\n", token.line, token_type_string, token.lexeme);
 }

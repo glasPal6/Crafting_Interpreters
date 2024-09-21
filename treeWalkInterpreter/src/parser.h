@@ -4,6 +4,7 @@
 #include "expr.h"
 #include "logging.h"
 #include "tokenList.h"
+#include "tokens.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -140,7 +141,8 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     if (parserMatch(parser, tokens, checkToken, 1)) {
         Token op = (Token){.type = FALSE,
                            .lexeme = "false",
-                           .literal.string = "false",
+                           .literal.object.number = 0,
+                           .literal.type = BOOL_LITERAL,
                            .line = -1};
         Expr *expr = malloc(sizeof(Expr));
         expr->type = EXPR_LITERAL;
@@ -151,7 +153,8 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     if (parserMatch(parser, tokens, checkToken, 1)) {
         Token op = (Token){.type = TRUE,
                            .lexeme = "true",
-                           .literal.string = "true",
+                           .literal.object.number = 1,
+                           .literal.type = BOOL_LITERAL,
                            .line = -1};
         Expr *expr = malloc(sizeof(Expr));
         expr->type = EXPR_LITERAL;
@@ -160,8 +163,11 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     }
     checkToken[0] = NIL;
     if (parserMatch(parser, tokens, checkToken, 1)) {
-        Token op = (Token){
-            .type = NIL, .lexeme = "", .literal.string = "", .line = -1};
+        Token op = (Token){.type = NIL,
+                           .lexeme = "",
+                           .literal.object.string = "",
+                           .literal.type = NONE_LITERAL,
+                           .line = -1};
         Expr *expr = malloc(sizeof(Expr));
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = op;
@@ -192,8 +198,11 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     errorToken(parserPeek(parser, tokens), "Expected Expresions.", had_error);
 
     // Check this
-    Token null_literal = {
-        .type = EOF_I, .lexeme = "", .literal.string = "", .line = -1};
+    Token null_literal = {.type = EOF_I,
+                          .lexeme = "",
+                          .literal.object.string = "",
+                          .literal.type = NONE_LITERAL,
+                          .line = -1};
     Expr *expr = malloc(sizeof(Expr));
     expr->type = EXPR_LITERAL;
     expr->value.literal.token = null_literal;
@@ -244,8 +253,11 @@ Token parserConsume(Parser *parser, TokenList **tokens, TokenType type,
     }
 
     errorToken(parserPeek(parser, tokens), message, had_error);
-    Token null_literal = {
-        .type = EOF_I, .lexeme = "", .literal.string = "", .line = -1};
+    Token null_literal = {.type = EOF_I,
+                          .lexeme = "",
+                          .literal.object.string = "",
+                          .literal.type = NONE_LITERAL,
+                          .line = -1};
     return null_literal;
 }
 
