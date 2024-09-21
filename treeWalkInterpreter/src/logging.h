@@ -8,6 +8,7 @@
 
 void error(int line, char *message, bool *had_error);
 void report(int line, char *where, char *message, bool *had_error);
+void runtimeError(int line, char *message, bool *had_runtime_error);
 
 #endif // LOGGING_H
 
@@ -32,6 +33,11 @@ void errorToken(Token token, char *message, bool *had_error) {
 void report(int line, char *where, char *message, bool *had_error) {
     printf("[line %d] Error %s: %s\n", line, where, message);
     *had_error = true;
+}
+
+void runtimeError(int line, char *message, bool *had_runtime_error) {
+    printf("[line %d] Error at runtime: %s\n", line, message);
+    *had_runtime_error = true;
 }
 
 #endif // LOGGING_IMPLEMENTATION

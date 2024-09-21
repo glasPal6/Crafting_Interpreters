@@ -59,6 +59,7 @@ Expr *equality(Parser *parser, TokenList **tokens, bool *had_error) {
         Expr *right = comparison(parser, tokens, had_error);
         Expr *old_expr = expr;
         expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_BINARY;
         expr->value.binary.left = old_expr, expr->value.binary.token = op,
         expr->value.binary.right = right;
@@ -76,6 +77,7 @@ Expr *comparison(Parser *parser, TokenList **tokens, bool *had_error) {
         Expr *right = term(parser, tokens, had_error);
         Expr *old_expr = expr;
         expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_BINARY;
         expr->value.binary.left = old_expr, expr->value.binary.token = op,
         expr->value.binary.right = right;
@@ -93,6 +95,7 @@ Expr *term(Parser *parser, TokenList **tokens, bool *had_error) {
         Expr *right = factor(parser, tokens, had_error);
         Expr *old_expr = expr;
         expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_BINARY;
         expr->value.binary.left = old_expr, expr->value.binary.token = op,
         expr->value.binary.right = right;
@@ -110,6 +113,7 @@ Expr *factor(Parser *parser, TokenList **tokens, bool *had_error) {
         Expr *right = unary(parser, tokens, had_error);
         Expr *old_expr = expr;
         expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_BINARY;
         expr->value.binary.left = old_expr, expr->value.binary.token = op,
         expr->value.binary.right = right;
@@ -124,6 +128,7 @@ Expr *unary(Parser *parser, TokenList **tokens, bool *had_error) {
         Token op = parserPrevious(parser, tokens);
         Expr *right = unary(parser, tokens, had_error);
         Expr *expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_UNARY;
         expr->value.unary.token = op, expr->value.unary.right = right;
         return expr;
@@ -145,6 +150,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .literal.type = BOOL_LITERAL,
                            .line = -1};
         Expr *expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = op;
         return expr;
@@ -157,6 +163,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .literal.type = BOOL_LITERAL,
                            .line = -1};
         Expr *expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = op;
         return expr;
@@ -169,6 +176,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .literal.type = NONE_LITERAL,
                            .line = -1};
         Expr *expr = malloc(sizeof(Expr));
+        expr->line = op.line;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = op;
         return expr;
@@ -179,6 +187,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     if (parserMatch(parser, tokens, checkToken, 2)) {
         Token tokenLiteral = parserPrevious(parser, tokens);
         Expr *expr = malloc(sizeof(Expr));
+        expr->line = -1;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = tokenLiteral;
         return expr;
@@ -190,6 +199,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
         parserConsume(parser, tokens, RIGHT_PAREN,
                       "Expect ')' after expression.", had_error);
         Expr *expr_grouping = malloc(sizeof(Expr));
+        expr->line = -1;
         expr_grouping->type = EXPR_GROUPING;
         expr_grouping->value.grouping = expr;
         return expr_grouping;
@@ -204,6 +214,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                           .literal.type = NONE_LITERAL,
                           .line = -1};
     Expr *expr = malloc(sizeof(Expr));
+    expr->line = -1;
     expr->type = EXPR_LITERAL;
     expr->value.literal.token = null_literal;
     return expr;

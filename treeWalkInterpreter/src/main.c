@@ -10,33 +10,29 @@
 #include "tokenList.h"
 #include "tokens.h"
 
-void interpret(char *source) {
-    bool had_error = false;
-
+void interpret(char *source, bool *had_error, bool *had_runtime_error) {
     // Parse the files
     TokenList *tokens = NULL;
-    scanTokens(&tokens, source, &had_error);
-    Expr *expression = parseTokens(&tokens, &had_error);
-    Literal literal = visitExpr(expression);
-    /*interpretExpr(expression);*/
+    scanTokens(&tokens, source, had_error);
+    Expr *expression = parseTokens(&tokens, had_error);
+    interpretExpr(expression, had_runtime_error);
 
     // Print the results
+    printf("\n");
     printf("%s", source);
     printf("\n");
     listPrint(tokens);
     printf("\n");
     printExpr(expression, 0);
-    printf("\n");
-    printLiteralObj(literal);
+    /*printf("\n");*/
+    /*Literal literal = visitExpr(expression);*/
+    /*printLiteralObj(literal);*/
 
     // Clear the memory
     while (tokens != NULL) {
         listPop(&tokens);
     }
     clearExpr(expression);
-
-    if (had_error)
-        exit(1);
 }
 
 void runFile(char *path) {
@@ -62,9 +58,17 @@ void runFile(char *path) {
     buffer[bytes_to_read] = '\0';
     fclose(lox_file);
 
-    interpret(buffer);
+    bool had_error = false;
+    bool had_runtime_error = false;
 
+    interpret(buffer, &had_error, &had_runtime_error);
     free(buffer);
+
+    if (had_error)
+        exit(1);
+    if (had_runtime_error)
+        exit(2);
+
     exit(0);
 }
 
@@ -79,7 +83,10 @@ void runPrompt() {
             break;
         }
 
-        interpret(line);
+        bool had_error = false;
+        bool had_runtime_error = false;
+
+        interpret(line, &had_error, &had_runtime_error);
     }
 
     exit(1);

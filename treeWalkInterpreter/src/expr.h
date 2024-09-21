@@ -8,6 +8,7 @@ typedef enum { EXPR_GROUPING, EXPR_BINARY, EXPR_LITERAL, EXPR_UNARY } ExprType;
 
 typedef struct Expr {
     ExprType type;
+    int line;
     union {
         struct Expr *grouping;
         struct {

@@ -2,11 +2,12 @@
 #define INTERPRETER_H
 
 #include "expr.h"
+#include "logging.h"
 #include "tokens.h"
 #include <stdint.h>
 #include <string.h>
 
-void interpretExpr(Expr *expr);
+void interpretExpr(Expr *expr, bool *had_runtime_error);
 
 Literal visitExpr(Expr *expr);
 Literal visitGrouping(Expr *expr);
@@ -24,8 +25,14 @@ bool checkNumberOperand(Literal literal1, Literal literal2);
 #ifdef INTERPRETER_IMPLEMENTATION
 #undef INTERPRETER_IMPLEMENTATION
 
-void interpretExpr(Expr *expr) {
+void interpretExpr(Expr *expr, bool *had_runtime_error) {
     Literal value = visitExpr(expr);
+    if (value.type == NONE_LITERAL) {
+        runtimeError(
+            expr->line,
+            "Unknown literal type(s) - Or cannot use both types together.",
+            had_runtime_error);
+    }
     printLiteralObj(value);
 }
 
