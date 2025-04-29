@@ -2,6 +2,7 @@
 #define TOKENS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -77,7 +78,7 @@ typedef struct {
     TokenType type;
     char *lexeme;
     Literal literal;
-    int line;
+    int32_t line;
 } Token;
 
 void freeToken(Token *token);

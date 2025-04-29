@@ -2,6 +2,7 @@
 #define SCANNER_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -9,10 +10,10 @@
 #include "tokenList.h"
 
 typedef struct {
-    int start;
-    int current;
-    int line;
-    int source_length;
+    uint32_t start;
+    uint32_t current;
+    uint32_t line;
+    uint32_t source_length;
 } Scanner;
 
 void scanTokens(TokenList **tokens, char *source, bool *had_error);
@@ -57,7 +58,7 @@ void scanTokens(TokenList **tokens, char *source, bool *had_error) {
                        .literal.type = NONE_LITERAL,
                        .line = scanner.line};
 
-    listPushEnd(tokens, endOfFile);
+    tokenListPushEnd(tokens, endOfFile);
 }
 
 bool scannerIsAtEnd(Scanner scanner) {
@@ -192,7 +193,7 @@ void scannerAddToken(TokenList **list, Scanner *scanner, char *source,
         token.literal.type = NONE_LITERAL;
         token.line = scanner->line;
     }
-    listPushEnd(list, token);
+    tokenListPushEnd(list, token);
 }
 
 bool scannerMatch(Scanner *scanner, char *source, char expected) {

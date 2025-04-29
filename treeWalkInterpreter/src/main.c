@@ -21,7 +21,7 @@ void interpret(char *source, bool *had_error, bool *had_runtime_error) {
     printf("\n");
     printf("%s", source);
     printf("\n");
-    listPrint(tokens);
+    tokenListPrint(tokens);
     printf("\n");
     printExpr(expression, 0);
     /*printf("\n");*/
@@ -30,7 +30,7 @@ void interpret(char *source, bool *had_error, bool *had_runtime_error) {
 
     // Clear the memory
     while (tokens != NULL) {
-        listPop(&tokens);
+        tokenListPop(&tokens);
     }
     clearExpr(expression);
 }

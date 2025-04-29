@@ -200,7 +200,7 @@ Literal isEqual(Literal left, Literal right) {
         return (Literal){.type = BOOL_LITERAL, .object.boolean = false};
 
     if (left.type == STRING_LITERAL && right.type == STRING_LITERAL) {
-        int result = strcmp(left.object.string, right.object.string);
+        int32_t result = strcmp(left.object.string, right.object.string);
         return (Literal){.type = BOOL_LITERAL, .object.boolean = result == 0};
     }
 

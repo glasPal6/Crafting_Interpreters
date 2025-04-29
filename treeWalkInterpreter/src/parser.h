@@ -6,9 +6,10 @@
 #include "tokenList.h"
 #include "tokens.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
-    int current;
+    uint32_t current;
 } Parser;
 
 Expr *parseTokens(TokenList **tokens, bool *had_error);
@@ -250,11 +251,11 @@ bool parserIsAtEnd(Parser *parser, TokenList **tokens) {
 }
 
 Token parserPeek(Parser *parser, TokenList **tokens) {
-    return tokensListIndexOf(tokens, parser->current);
+    return tokenListIndexOf(tokens, parser->current);
 }
 
 Token parserPrevious(Parser *parser, TokenList **tokens) {
-    return tokensListIndexOf(tokens, parser->current - 1);
+    return tokenListIndexOf(tokens, parser->current - 1);
 }
 
 Token parserConsume(Parser *parser, TokenList **tokens, TokenType type,

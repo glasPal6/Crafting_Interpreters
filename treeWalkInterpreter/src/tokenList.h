@@ -2,30 +2,30 @@
 #define TOKENLIST_H
 
 #include "tokens.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 typedef struct TokenList {
     Token token;
     struct TokenList *next;
-    int index;
+    uint32_t index;
 } TokenList;
 
-void listPushEnd(TokenList **list, Token token);
-void listPushStart(TokenList **list, Token token);
-void listPop(TokenList **list);
+void tokenListPushEnd(TokenList **list, Token token);
+void tokenListPushStart(TokenList **list, Token token);
+void tokenListPop(TokenList **list);
 
-Token tokensListIndexOf(TokenList **list, int index);
+Token tokenListIndexOf(TokenList **list, uint32_t index);
 
-void listPrint(TokenList *list);
+void tokenListPrint(TokenList *list);
 
 #endif // !TOKENLIST_H
 
 #ifdef TOKENLIST_IMPLEMENTATION
 #undef TOKENLIST_IMPLEMENTATION
 
-void listPushEnd(TokenList **list, Token token) {
+void tokenListPushEnd(TokenList **list, Token token) {
     TokenList *node = (TokenList *)malloc(sizeof(TokenList));
     node->token = token;
     node->next = NULL;
@@ -43,7 +43,7 @@ void listPushEnd(TokenList **list, Token token) {
     }
 }
 
-void listPushStart(TokenList **list, Token token) {
+void tokenListPushStart(TokenList **list, Token token) {
     if (*list != NULL)
         (*list)->index++;
 
@@ -55,7 +55,7 @@ void listPushStart(TokenList **list, Token token) {
     (*list) = node;
 }
 
-void listPop(TokenList **list) {
+void tokenListPop(TokenList **list) {
     if (*list == NULL) {
         printf("List is empty\n");
         return;
@@ -66,7 +66,7 @@ void listPop(TokenList **list) {
     free(list_node);
 }
 
-Token tokensListIndexOf(TokenList **list, int index) {
+Token tokenListIndexOf(TokenList **list, uint32_t index) {
     TokenList *node = *list;
     while (node != NULL) {
         if (node->index == index)
@@ -81,7 +81,7 @@ Token tokensListIndexOf(TokenList **list, int index) {
     return null_token;
 }
 
-void listPrint(TokenList *list) {
+void tokenListPrint(TokenList *list) {
     if (list == NULL) {
         printf("List has no Tokens\n");
         return;

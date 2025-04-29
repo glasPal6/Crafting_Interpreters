@@ -2,13 +2,13 @@
 #define EXPR_H
 
 #include "tokens.h"
+#include <stdint.h>
 
-// Generated this with code
 typedef enum { EXPR_GROUPING, EXPR_BINARY, EXPR_LITERAL, EXPR_UNARY } ExprType;
 
 typedef struct Expr {
     ExprType type;
-    int line;
+    int32_t line;
     union {
         struct Expr *grouping;
         struct {
