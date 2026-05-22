@@ -1,26 +1,27 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "tokens.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-void error(int32_t line, char *message, bool *had_error);
-void report(int32_t line, char *where, char *message, bool *had_error);
-void runtimeError(int32_t line, char *message, bool *had_runtime_error);
+#include "tokens.h"
 
-#endif // LOGGING_H
+void error(int32_t line, char* message, bool* had_error);
+void report(int32_t line, char* where, char* message, bool* had_error);
+void runtimeError(int32_t line, char* message, bool* had_runtime_error);
+
+#endif  // LOGGING_H
 
 #ifdef LOGGING_IMPLEMENTATION
 #undef LOGGING_IMPLEMENTATION
 
-void error(int32_t line, char *message, bool *had_error) {
+void error(int32_t line, char* message, bool* had_error) {
     report(line, "", message, had_error);
 }
 
-void errorToken(Token token, char *message, bool *had_error) {
+void errorToken(Token token, char* message, bool* had_error) {
     if (token.type == EOF_I) {
         report(token.line, " at end", message, had_error);
     } else {
@@ -31,14 +32,14 @@ void errorToken(Token token, char *message, bool *had_error) {
     }
 }
 
-void report(int32_t line, char *where, char *message, bool *had_error) {
+void report(int32_t line, char* where, char* message, bool* had_error) {
     printf("[line %d] Error %s: %s\n", line, where, message);
     *had_error = true;
 }
 
-void runtimeError(int32_t line, char *message, bool *had_runtime_error) {
+void runtimeError(int32_t line, char* message, bool* had_runtime_error) {
     printf("[line %d] Error at runtime: %s\n", line, message);
     *had_runtime_error = true;
 }
 
-#endif // LOGGING_IMPLEMENTATION
+#endif  // LOGGING_IMPLEMENTATION

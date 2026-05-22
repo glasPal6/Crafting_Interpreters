@@ -10,11 +10,11 @@
 #include "tokenList.h"
 #include "tokens.h"
 
-void interpret(char *source, bool *had_error, bool *had_runtime_error) {
+void interpret(char* source, bool* had_error, bool* had_runtime_error) {
     // Parse the files
-    TokenList *tokens = NULL;
+    TokenList* tokens = NULL;
     scanTokens(&tokens, source, had_error);
-    Expr *expression = parseTokens(&tokens, had_error);
+    Expr* expression = parseTokens(&tokens, had_error);
     interpretExpr(expression, had_runtime_error);
 
     // Print the results
@@ -35,8 +35,8 @@ void interpret(char *source, bool *had_error, bool *had_runtime_error) {
     clearExpr(expression);
 }
 
-void runFile(char *path) {
-    FILE *lox_file = fopen(path, "r");
+void runFile(char* path) {
+    FILE* lox_file = fopen(path, "r");
     if (lox_file == NULL) {
         printf("Error: could not open file: %s\n", path);
         exit(1);
@@ -48,7 +48,7 @@ void runFile(char *path) {
     rewind(lox_file);
 
     // Load the file as a string
-    char *buffer = (char *)malloc(file_size + 1);
+    char* buffer = (char*)malloc(file_size + 1);
     size_t bytes_to_read = fread(buffer, sizeof(char), file_size, lox_file);
     if (bytes_to_read < file_size) {
         printf("Error: could not read the file: %s\n", path);
@@ -64,10 +64,8 @@ void runFile(char *path) {
     interpret(buffer, &had_error, &had_runtime_error);
     free(buffer);
 
-    if (had_error)
-        exit(1);
-    if (had_runtime_error)
-        exit(2);
+    if (had_error) exit(1);
+    if (had_runtime_error) exit(2);
 
     exit(0);
 }
@@ -92,7 +90,7 @@ void runPrompt() {
     exit(1);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     // Check the args for the file
     if (argc > 2) {
         printf("Usage: jlox [script]\n");

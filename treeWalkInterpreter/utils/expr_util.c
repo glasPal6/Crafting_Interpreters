@@ -6,10 +6,10 @@
 #define STR_LENGTH 100
 #define TOKEN_LENGTH 10
 
-void defineAst(char *path, char class_names_upper[][STR_LENGTH],
+void defineAst(char* path, char class_names_upper[][STR_LENGTH],
                char class_names_lower[][STR_LENGTH],
                char class_types[][STR_LENGTH], size_t count) {
-    FILE *file = fopen(path, "w");
+    FILE* file = fopen(path, "w");
     if (file == NULL) {
         printf("Error: could not open file: %s\n", path);
         return;
@@ -23,8 +23,7 @@ void defineAst(char *path, char class_names_upper[][STR_LENGTH],
     fprintf(file, "typedef enum {\n");
     for (size_t i = 0; i < count; i++) {
         fprintf(file, "\tEXPR_%s", class_names_upper[i]);
-        if (i != count - 1)
-            fprintf(file, ",");
+        if (i != count - 1) fprintf(file, ",");
         fprintf(file, "\n");
     }
     fprintf(file, "} ExprType;\n\n");
@@ -43,7 +42,7 @@ void defineAst(char *path, char class_names_upper[][STR_LENGTH],
 
         // Get the tokens
         char tokens[TOKEN_LENGTH][STR_LENGTH];
-        char *token = strtok(class_types[i], ", ");
+        char* token = strtok(class_types[i], ", ");
         size_t j = 0;
         while (token != NULL) {
             strcpy(tokens[j], token);
@@ -81,9 +80,9 @@ void defineAst(char *path, char class_names_upper[][STR_LENGTH],
     fclose(file);
 }
 
-void defineFunctinos(char *path, char class_names_upper[][STR_LENGTH],
+void defineFunctinos(char* path, char class_names_upper[][STR_LENGTH],
                      char class_names_lower[][STR_LENGTH], size_t count) {
-    FILE *file = fopen(path, "a");
+    FILE* file = fopen(path, "a");
     if (file == NULL) {
         printf("Error: could not open file: %s\n", path);
         return;
@@ -140,14 +139,14 @@ void defineFunctinos(char *path, char class_names_upper[][STR_LENGTH],
     fclose(file);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
         printf("Usage: expr_util <output directory>\n");
         return 1;
     }
 
-    char *output_dir = argv[1];
-    char *name = "expr_structs";
+    char* output_dir = argv[1];
+    char* name = "expr_structs";
     char path[sizeof(output_dir) + sizeof(name) + 6] = "../";
     strcat(path, output_dir);
     strcat(path, "/");
@@ -169,10 +168,10 @@ int main(int argc, char *argv[]) {
     char class_names_lower[expr_class_count][STR_LENGTH];
     char class_types[expr_class_count][STR_LENGTH];
     for (size_t i = 0; i < expr_class_count; i++) {
-        char *tokens = strtok(ast_classes[i], "-");
+        char* tokens = strtok(ast_classes[i], "-");
         strcpy(class_names_upper[i], tokens);
         strcpy(class_names_lower[i], tokens);
-        char *lower = class_names_lower[i];
+        char* lower = class_names_lower[i];
         while (*lower) {
             *lower = tolower((unsigned char)*lower);
             lower++;

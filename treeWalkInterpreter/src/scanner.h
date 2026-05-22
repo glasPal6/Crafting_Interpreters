@@ -16,30 +16,30 @@ typedef struct {
     uint32_t source_length;
 } Scanner;
 
-void scanTokens(TokenList **tokens, char *source, bool *had_error);
+void scanTokens(TokenList** tokens, char* source, bool* had_error);
 bool scannerIsAtEnd(Scanner scanner);
-void scanToken(TokenList **tokens, Scanner *scanner, char *source,
-               bool *had_error);
-char scannerAdvance(Scanner *scanner, char *source);
-void scannerAddToken(TokenList **list, Scanner *scanner, char *source,
-                     char *literal, TokenType type);
-bool scannerMatch(Scanner *scanner, char *source, char expected);
-char scannerPeek(Scanner scanner, char *source);
-char scannerPeekNext(Scanner scanner, char *source);
-void scannerAddString(TokenList **list, Scanner *scanner, char *source,
-                      bool *had_error);
+void scanToken(TokenList** tokens, Scanner* scanner, char* source,
+               bool* had_error);
+char scannerAdvance(Scanner* scanner, char* source);
+void scannerAddToken(TokenList** list, Scanner* scanner, char* source,
+                     char* literal, TokenType type);
+bool scannerMatch(Scanner* scanner, char* source, char expected);
+char scannerPeek(Scanner scanner, char* source);
+char scannerPeekNext(Scanner scanner, char* source);
+void scannerAddString(TokenList** list, Scanner* scanner, char* source,
+                      bool* had_error);
 bool scannerIsDigit(char c);
-void scannerAddNumber(TokenList **list, Scanner *scanner, char *source);
+void scannerAddNumber(TokenList** list, Scanner* scanner, char* source);
 bool scannerIsAlpha(char c);
 bool scannerIsAlphaNumeric(char c);
-void scannerIdentifier(TokenList **list, Scanner *scanner, char *source);
+void scannerIdentifier(TokenList** list, Scanner* scanner, char* source);
 
-#endif // !SCANNER_H
+#endif  // !SCANNER_H
 
 #ifdef SCANNER_IMPLEMENTATION
 #undef SCANNER_IMPLEMENTATION
 
-void scanTokens(TokenList **tokens, char *source, bool *had_error) {
+void scanTokens(TokenList** tokens, char* source, bool* had_error) {
     Scanner scanner = {
         .current = 0,
         .start = 0,
@@ -65,111 +65,113 @@ bool scannerIsAtEnd(Scanner scanner) {
     return scanner.current >= scanner.source_length;
 }
 
-void scanToken(TokenList **tokens, Scanner *scanner, char *source,
-               bool *had_error) {
+void scanToken(TokenList** tokens, Scanner* scanner, char* source,
+               bool* had_error) {
     char c = scannerAdvance(scanner, source);
     switch (c) {
-    // Pure singe Tokens
-    case '(':
-        scannerAddToken(tokens, scanner, source, NULL, LEFT_PAREN);
-        break;
-    case ')':
-        scannerAddToken(tokens, scanner, source, NULL, RIGHT_PAREN);
-        break;
-    case '{':
-        scannerAddToken(tokens, scanner, source, NULL, LEFT_BRACE);
-        break;
-    case '}':
-        scannerAddToken(tokens, scanner, source, NULL, RIGHT_BRACE);
-        break;
-    case ',':
-        scannerAddToken(tokens, scanner, source, NULL, COMMA);
-        break;
-    case '.':
-        scannerAddToken(tokens, scanner, source, NULL, DOT);
-        break;
-    case '-':
-        scannerAddToken(tokens, scanner, source, NULL, MINUS);
-        break;
-    case '+':
-        scannerAddToken(tokens, scanner, source, NULL, PLUS);
-        break;
-    case ';':
-        scannerAddToken(tokens, scanner, source, NULL, SEMICOLON);
-        break;
-    case '*':
-        scannerAddToken(tokens, scanner, source, NULL, STAR);
-        break;
+        // Pure singe Tokens
+        case '(':
+            scannerAddToken(tokens, scanner, source, NULL, LEFT_PAREN);
+            break;
+        case ')':
+            scannerAddToken(tokens, scanner, source, NULL, RIGHT_PAREN);
+            break;
+        case '{':
+            scannerAddToken(tokens, scanner, source, NULL, LEFT_BRACE);
+            break;
+        case '}':
+            scannerAddToken(tokens, scanner, source, NULL, RIGHT_BRACE);
+            break;
+        case ',':
+            scannerAddToken(tokens, scanner, source, NULL, COMMA);
+            break;
+        case '.':
+            scannerAddToken(tokens, scanner, source, NULL, DOT);
+            break;
+        case '-':
+            scannerAddToken(tokens, scanner, source, NULL, MINUS);
+            break;
+        case '+':
+            scannerAddToken(tokens, scanner, source, NULL, PLUS);
+            break;
+        case ';':
+            scannerAddToken(tokens, scanner, source, NULL, SEMICOLON);
+            break;
+        case '*':
+            scannerAddToken(tokens, scanner, source, NULL, STAR);
+            break;
 
-    // Single or double Tokens
-    case '!':
-        scannerAddToken(tokens, scanner, source, NULL,
-                        scannerMatch(scanner, source, '=') ? BANG_EQUAL : BANG);
-        break;
+        // Single or double Tokens
+        case '!':
+            scannerAddToken(
+                tokens, scanner, source, NULL,
+                scannerMatch(scanner, source, '=') ? BANG_EQUAL : BANG);
+            break;
 
-    case '=':
-        scannerAddToken(tokens, scanner, source, NULL,
-                        scannerMatch(scanner, source, '=') ? EQUAL_EQUAL
-                                                           : EQUAL);
-        break;
+        case '=':
+            scannerAddToken(
+                tokens, scanner, source, NULL,
+                scannerMatch(scanner, source, '=') ? EQUAL_EQUAL : EQUAL);
+            break;
 
-    case '<':
-        scannerAddToken(tokens, scanner, source, NULL,
-                        scannerMatch(scanner, source, '=') ? LESS_EQUAL : LESS);
-        break;
+        case '<':
+            scannerAddToken(
+                tokens, scanner, source, NULL,
+                scannerMatch(scanner, source, '=') ? LESS_EQUAL : LESS);
+            break;
 
-    case '>':
-        scannerAddToken(tokens, scanner, source, NULL,
-                        scannerMatch(scanner, source, '=') ? GREATER_EQUAL
-                                                           : GREATER);
-        break;
+        case '>':
+            scannerAddToken(
+                tokens, scanner, source, NULL,
+                scannerMatch(scanner, source, '=') ? GREATER_EQUAL : GREATER);
+            break;
 
-    // SLASH or a comment
-    case '/':
-        if (scannerMatch(scanner, source, '/')) {
-            while (scannerPeek(*scanner, source) != '\n' &&
-                   !scannerIsAtEnd(*scanner))
-                scannerAdvance(scanner, source);
-        } else {
-            scannerAddToken(tokens, scanner, source, NULL, SLASH);
-        }
-        break;
+        // SLASH or a comment
+        case '/':
+            if (scannerMatch(scanner, source, '/')) {
+                while (scannerPeek(*scanner, source) != '\n' &&
+                       !scannerIsAtEnd(*scanner))
+                    scannerAdvance(scanner, source);
+            } else {
+                scannerAddToken(tokens, scanner, source, NULL, SLASH);
+            }
+            break;
 
-    // Whitespace
-    case ' ':
-    case '\r':
-    case '\t':
-        break;
+        // Whitespace
+        case ' ':
+        case '\r':
+        case '\t':
+            break;
 
-    // New line
-    case '\n':
-        scanner->line++;
-        break;
+        // New line
+        case '\n':
+            scanner->line++;
+            break;
 
-    // Strings
-    case '"':
-        scannerAddString(tokens, scanner, source, had_error);
-        break;
+        // Strings
+        case '"':
+            scannerAddString(tokens, scanner, source, had_error);
+            break;
 
-    default:
-        if (scannerIsDigit(c)) {
-            scannerAddNumber(tokens, scanner, source);
-        } else if (scannerIsAlpha(c)) {
-            scannerIdentifier(tokens, scanner, source);
-        } else {
-            error(scanner->line, "Unexpected character.", had_error);
-        }
-        break;
+        default:
+            if (scannerIsDigit(c)) {
+                scannerAddNumber(tokens, scanner, source);
+            } else if (scannerIsAlpha(c)) {
+                scannerIdentifier(tokens, scanner, source);
+            } else {
+                error(scanner->line, "Unexpected character.", had_error);
+            }
+            break;
     }
 }
 
-char scannerAdvance(Scanner *scanner, char *source) {
+char scannerAdvance(Scanner* scanner, char* source) {
     return source[scanner->current++];
 }
 
-void scannerAddToken(TokenList **list, Scanner *scanner, char *source,
-                     char *literal, TokenType type) {
-    char *text = (char *)malloc(scanner->current - scanner->start + 1);
+void scannerAddToken(TokenList** list, Scanner* scanner, char* source,
+                     char* literal, TokenType type) {
+    char* text = (char*)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
@@ -196,34 +198,29 @@ void scannerAddToken(TokenList **list, Scanner *scanner, char *source,
     tokenListPushEnd(list, token);
 }
 
-bool scannerMatch(Scanner *scanner, char *source, char expected) {
-    if (scannerIsAtEnd(*scanner))
-        return false;
-    if (source[scanner->current] != expected)
-        return false;
+bool scannerMatch(Scanner* scanner, char* source, char expected) {
+    if (scannerIsAtEnd(*scanner)) return false;
+    if (source[scanner->current] != expected) return false;
 
     scanner->current++;
     return true;
 }
 
-char scannerPeek(Scanner scanner, char *source) {
-    if (scannerIsAtEnd(scanner))
-        return '\0';
+char scannerPeek(Scanner scanner, char* source) {
+    if (scannerIsAtEnd(scanner)) return '\0';
     return source[scanner.current];
 }
 
-char scannerPeekNext(Scanner scanner, char *source) {
-    if (scanner.current + 1 >= scanner.source_length)
-        return '\0';
+char scannerPeekNext(Scanner scanner, char* source) {
+    if (scanner.current + 1 >= scanner.source_length) return '\0';
     return source[scanner.current + 1];
 }
 
-void scannerAddString(TokenList **list, Scanner *scanner, char *source,
-                      bool *had_error) {
+void scannerAddString(TokenList** list, Scanner* scanner, char* source,
+                      bool* had_error) {
     // Go to the end of the '"'
     while (scannerPeek(*scanner, source) != '"' && !scannerIsAtEnd(*scanner)) {
-        if (scannerPeek(*scanner, source) == '\n')
-            scanner->line++;
+        if (scannerPeek(*scanner, source) == '\n') scanner->line++;
         scannerAdvance(scanner, source);
     }
 
@@ -235,7 +232,7 @@ void scannerAddString(TokenList **list, Scanner *scanner, char *source,
     scannerAdvance(scanner, source);
 
     // Remove the quotes
-    char *text = (char *)malloc(scanner->current - scanner->start + 1 - 2);
+    char* text = (char*)malloc(scanner->current - scanner->start + 1 - 2);
     memcpy(text, source + scanner->start + 1,
            scanner->current - scanner->start - 2);
     text[scanner->current - scanner->start - 2] = '\0';
@@ -245,7 +242,7 @@ void scannerAddString(TokenList **list, Scanner *scanner, char *source,
 
 bool scannerIsDigit(char c) { return c >= '0' && c <= '9'; }
 
-void scannerAddNumber(TokenList **list, Scanner *scanner, char *source) {
+void scannerAddNumber(TokenList** list, Scanner* scanner, char* source) {
     while (scannerIsDigit(scannerPeek(*scanner, source)))
         scannerAdvance(scanner, source);
 
@@ -256,7 +253,7 @@ void scannerAddNumber(TokenList **list, Scanner *scanner, char *source) {
             scannerAdvance(scanner, source);
     }
 
-    char *text = (char *)malloc(scanner->current - scanner->start + 1);
+    char* text = (char*)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
 
@@ -272,11 +269,11 @@ bool scannerIsAlphaNumeric(char c) {
     return scannerIsAlpha(c) || scannerIsDigit(c);
 }
 
-void scannerIdentifier(TokenList **list, Scanner *scanner, char *source) {
+void scannerIdentifier(TokenList** list, Scanner* scanner, char* source) {
     while (scannerIsAlphaNumeric(scannerPeek(*scanner, source)))
         scannerAdvance(scanner, source);
 
-    char *text = (char *)malloc(scanner->current - scanner->start + 1);
+    char* text = (char*)malloc(scanner->current - scanner->start + 1);
     memcpy(text, source + scanner->start, scanner->current - scanner->start);
     text[scanner->current - scanner->start] = '\0';
     TokenType type = IDENTIFIER;
@@ -319,4 +316,4 @@ void scannerIdentifier(TokenList **list, Scanner *scanner, char *source) {
     scannerAddToken(list, scanner, source, NULL, type);
 }
 
-#endif // SCANNER_IMPLEMENTATION
+#endif  // SCANNER_IMPLEMENTATION

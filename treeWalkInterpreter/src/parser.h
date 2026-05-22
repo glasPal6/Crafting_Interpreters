@@ -1,64 +1,65 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "expr.h"
 #include "logging.h"
 #include "tokenList.h"
 #include "tokens.h"
-#include <stdbool.h>
-#include <stdint.h>
 
 typedef struct {
     uint32_t current;
 } Parser;
 
-Expr *parseTokens(TokenList **tokens, bool *had_error);
+Expr* parseTokens(TokenList** tokens, bool* had_error);
 
-Expr *expression(Parser *parser, TokenList **tokens, bool *had_error);
-Expr *equality(Parser *parser, TokenList **tokens, bool *had_error);
-Expr *comparison(Parser *parser, TokenList **tokens, bool *had_error);
-Expr *term(Parser *parser, TokenList **tokens, bool *had_error);
-Expr *factor(Parser *parser, TokenList **tokens, bool *had_error);
-Expr *unary(Parser *parser, TokenList **tokens, bool *had_error);
-Expr *primary(Parser *parser, TokenList **tokens, bool *had_error);
+Expr* expression(Parser* parser, TokenList** tokens, bool* had_error);
+Expr* equality(Parser* parser, TokenList** tokens, bool* had_error);
+Expr* comparison(Parser* parser, TokenList** tokens, bool* had_error);
+Expr* term(Parser* parser, TokenList** tokens, bool* had_error);
+Expr* factor(Parser* parser, TokenList** tokens, bool* had_error);
+Expr* unary(Parser* parser, TokenList** tokens, bool* had_error);
+Expr* primary(Parser* parser, TokenList** tokens, bool* had_error);
 
-bool parserMatch(Parser *parser, TokenList **tokens, TokenType *types,
+bool parserMatch(Parser* parser, TokenList** tokens, TokenType* types,
                  size_t count);
-bool parserCheck(Parser *parser, TokenList **tokens, TokenType type);
-Token parserAdvance(Parser *parser, TokenList **tokens);
-bool parserIsAtEnd(Parser *parser, TokenList **tokens);
-Token parserPeek(Parser *parser, TokenList **tokens);
-Token parserPrevious(Parser *parser, TokenList **tokens);
+bool parserCheck(Parser* parser, TokenList** tokens, TokenType type);
+Token parserAdvance(Parser* parser, TokenList** tokens);
+bool parserIsAtEnd(Parser* parser, TokenList** tokens);
+Token parserPeek(Parser* parser, TokenList** tokens);
+Token parserPrevious(Parser* parser, TokenList** tokens);
 
-Token parserConsume(Parser *parser, TokenList **tokens, TokenType type,
-                    char *message, bool *had_error);
-void parserSynchronization(Parser *parser, TokenList **tokens);
+Token parserConsume(Parser* parser, TokenList** tokens, TokenType type,
+                    char* message, bool* had_error);
+void parserSynchronization(Parser* parser, TokenList** tokens);
 
-#endif // !PARSER_H
+#endif  // !PARSER_H
 
 #ifdef PARSER_IMPLEMENTATION
 #undef PARSER_IMPLEMENTATION
 
-Expr *parseTokens(TokenList **tokens, bool *had_error) {
+Expr* parseTokens(TokenList** tokens, bool* had_error) {
     Parser parser = {.current = 0};
-    Expr *expr = expression(&parser, tokens, had_error);
+    Expr* expr = expression(&parser, tokens, had_error);
     // expr is EOF if had_error is true
     return expr;
 }
 
-Expr *expression(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr *expr = equality(parser, tokens, had_error);
+Expr* expression(Parser* parser, TokenList** tokens, bool* had_error) {
+    Expr* expr = equality(parser, tokens, had_error);
     return expr;
 }
 
-Expr *equality(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr *expr = comparison(parser, tokens, had_error);
+Expr* equality(Parser* parser, TokenList** tokens, bool* had_error) {
+    Expr* expr = comparison(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {BANG_EQUAL, EQUAL_EQUAL};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr *right = comparison(parser, tokens, had_error);
-        Expr *old_expr = expr;
+        Expr* right = comparison(parser, tokens, had_error);
+        Expr* old_expr = expr;
         expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_BINARY;
@@ -69,14 +70,14 @@ Expr *equality(Parser *parser, TokenList **tokens, bool *had_error) {
     return expr;
 }
 
-Expr *comparison(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr *expr = term(parser, tokens, had_error);
+Expr* comparison(Parser* parser, TokenList** tokens, bool* had_error) {
+    Expr* expr = term(parser, tokens, had_error);
 
     TokenType checkTokens[4] = {GREATER, GREATER_EQUAL, LESS, LESS_EQUAL};
     while (parserMatch(parser, tokens, checkTokens, 4)) {
         Token op = parserPrevious(parser, tokens);
-        Expr *right = term(parser, tokens, had_error);
-        Expr *old_expr = expr;
+        Expr* right = term(parser, tokens, had_error);
+        Expr* old_expr = expr;
         expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_BINARY;
@@ -87,14 +88,14 @@ Expr *comparison(Parser *parser, TokenList **tokens, bool *had_error) {
     return expr;
 }
 
-Expr *term(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr *expr = factor(parser, tokens, had_error);
+Expr* term(Parser* parser, TokenList** tokens, bool* had_error) {
+    Expr* expr = factor(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {MINUS, PLUS};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr *right = factor(parser, tokens, had_error);
-        Expr *old_expr = expr;
+        Expr* right = factor(parser, tokens, had_error);
+        Expr* old_expr = expr;
         expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_BINARY;
@@ -105,14 +106,14 @@ Expr *term(Parser *parser, TokenList **tokens, bool *had_error) {
     return expr;
 }
 
-Expr *factor(Parser *parser, TokenList **tokens, bool *had_error) {
-    Expr *expr = unary(parser, tokens, had_error);
+Expr* factor(Parser* parser, TokenList** tokens, bool* had_error) {
+    Expr* expr = unary(parser, tokens, had_error);
 
     TokenType checkTokens[2] = {SLASH, STAR};
     while (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr *right = unary(parser, tokens, had_error);
-        Expr *old_expr = expr;
+        Expr* right = unary(parser, tokens, had_error);
+        Expr* old_expr = expr;
         expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_BINARY;
@@ -123,24 +124,24 @@ Expr *factor(Parser *parser, TokenList **tokens, bool *had_error) {
     return expr;
 }
 
-Expr *unary(Parser *parser, TokenList **tokens, bool *had_error) {
+Expr* unary(Parser* parser, TokenList** tokens, bool* had_error) {
     TokenType checkTokens[2] = {BANG, MINUS};
     if (parserMatch(parser, tokens, checkTokens, 2)) {
         Token op = parserPrevious(parser, tokens);
-        Expr *right = unary(parser, tokens, had_error);
-        Expr *expr = malloc(sizeof(Expr));
+        Expr* right = unary(parser, tokens, had_error);
+        Expr* expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_UNARY;
         expr->value.unary.token = op, expr->value.unary.right = right;
         return expr;
     }
 
-    Expr *expr = primary(parser, tokens, had_error);
+    Expr* expr = primary(parser, tokens, had_error);
 
     return expr;
 }
 
-Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
+Expr* primary(Parser* parser, TokenList** tokens, bool* had_error) {
     TokenType checkToken[2] = {NIL, NIL};
 
     checkToken[0] = FALSE;
@@ -150,7 +151,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .literal.object.boolean = 0,
                            .literal.type = BOOL_LITERAL,
                            .line = -1};
-        Expr *expr = malloc(sizeof(Expr));
+        Expr* expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = op;
@@ -163,7 +164,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .literal.object.boolean = 1,
                            .literal.type = BOOL_LITERAL,
                            .line = -1};
-        Expr *expr = malloc(sizeof(Expr));
+        Expr* expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = op;
@@ -176,7 +177,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                            .literal.object.string = "",
                            .literal.type = NONE_LITERAL,
                            .line = -1};
-        Expr *expr = malloc(sizeof(Expr));
+        Expr* expr = malloc(sizeof(Expr));
         expr->line = op.line;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = op;
@@ -187,7 +188,7 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
     checkToken[1] = STRING;
     if (parserMatch(parser, tokens, checkToken, 2)) {
         Token tokenLiteral = parserPrevious(parser, tokens);
-        Expr *expr = malloc(sizeof(Expr));
+        Expr* expr = malloc(sizeof(Expr));
         expr->line = -1;
         expr->type = EXPR_LITERAL;
         expr->value.literal.token = tokenLiteral;
@@ -196,10 +197,10 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
 
     checkToken[0] = LEFT_PAREN;
     if (parserMatch(parser, tokens, checkToken, 1)) {
-        Expr *expr = expression(parser, tokens, had_error);
+        Expr* expr = expression(parser, tokens, had_error);
         parserConsume(parser, tokens, RIGHT_PAREN,
                       "Expect ')' after expression.", had_error);
-        Expr *expr_grouping = malloc(sizeof(Expr));
+        Expr* expr_grouping = malloc(sizeof(Expr));
         expr->line = -1;
         expr_grouping->type = EXPR_GROUPING;
         expr_grouping->value.grouping = expr;
@@ -214,14 +215,14 @@ Expr *primary(Parser *parser, TokenList **tokens, bool *had_error) {
                           .literal.object.string = "",
                           .literal.type = NONE_LITERAL,
                           .line = -1};
-    Expr *expr = malloc(sizeof(Expr));
+    Expr* expr = malloc(sizeof(Expr));
     expr->line = -1;
     expr->type = EXPR_LITERAL;
     expr->value.literal.token = null_literal;
     return expr;
 }
 
-bool parserMatch(Parser *parser, TokenList **tokens, TokenType *types,
+bool parserMatch(Parser* parser, TokenList** tokens, TokenType* types,
                  size_t count) {
     for (size_t i = 0; i < count; i++) {
         bool check_token_type = parserCheck(parser, tokens, types[i]);
@@ -234,32 +235,30 @@ bool parserMatch(Parser *parser, TokenList **tokens, TokenType *types,
     return false;
 }
 
-bool parserCheck(Parser *parser, TokenList **tokens, TokenType type) {
-    if (parserIsAtEnd(parser, tokens))
-        return false;
+bool parserCheck(Parser* parser, TokenList** tokens, TokenType type) {
+    if (parserIsAtEnd(parser, tokens)) return false;
     return parserPeek(parser, tokens).type == type;
 }
 
-Token parserAdvance(Parser *parser, TokenList **tokens) {
-    if (!parserIsAtEnd(parser, tokens))
-        parser->current++;
+Token parserAdvance(Parser* parser, TokenList** tokens) {
+    if (!parserIsAtEnd(parser, tokens)) parser->current++;
     return parserPeek(parser, tokens);
 }
 
-bool parserIsAtEnd(Parser *parser, TokenList **tokens) {
+bool parserIsAtEnd(Parser* parser, TokenList** tokens) {
     return parserPeek(parser, tokens).type == EOF_I;
 }
 
-Token parserPeek(Parser *parser, TokenList **tokens) {
+Token parserPeek(Parser* parser, TokenList** tokens) {
     return tokenListIndexOf(tokens, parser->current);
 }
 
-Token parserPrevious(Parser *parser, TokenList **tokens) {
+Token parserPrevious(Parser* parser, TokenList** tokens) {
     return tokenListIndexOf(tokens, parser->current - 1);
 }
 
-Token parserConsume(Parser *parser, TokenList **tokens, TokenType type,
-                    char *message, bool *had_error) {
+Token parserConsume(Parser* parser, TokenList** tokens, TokenType type,
+                    char* message, bool* had_error) {
     if (parserCheck(parser, tokens, type)) {
         return parserAdvance(parser, tokens);
     }
@@ -273,27 +272,26 @@ Token parserConsume(Parser *parser, TokenList **tokens, TokenType type,
     return null_literal;
 }
 
-void parserSynchronization(Parser *parser, TokenList **tokens) {
+void parserSynchronization(Parser* parser, TokenList** tokens) {
     parserAdvance(parser, tokens);
 
     while (!parserIsAtEnd(parser, tokens)) {
-        if (parserPrevious(parser, tokens).type == SEMICOLON)
-            return;
+        if (parserPrevious(parser, tokens).type == SEMICOLON) return;
 
         switch (parserPeek(parser, tokens).type) {
-        case CLASS:
-        case FUN:
-        case VAR:
-        case FOR:
-        case IF:
-        case WHILE:
-        case PRINT:
-        case RETURN:
-            return;
-        default:
-            parserAdvance(parser, tokens);
+            case CLASS:
+            case FUN:
+            case VAR:
+            case FOR:
+            case IF:
+            case WHILE:
+            case PRINT:
+            case RETURN:
+                return;
+            default:
+                parserAdvance(parser, tokens);
         }
     }
 }
 
-#endif // PARSER_IMPLEMENTATION
+#endif  // PARSER_IMPLEMENTATION
