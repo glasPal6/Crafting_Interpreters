@@ -1,7 +1,6 @@
 # Crafting Interpreters
 
-This is a repo working through the book [Crafting Intertreters](https://craftinginterpreters.com/contents.html). \
-The code will be done in C for both of the interpreters. \
+This is a repo working through the book [Crafting Intertreters](https://craftinginterpreters.com/contents.html). Which aims to make a basic tree-walking interpreter and a byte code machine.
 
 Current Position is: (https://craftinginterpreters.com/evaluating-expressions.html)
 
